@@ -61,7 +61,16 @@ public class UserServiceImpl implements UserService {
         // 检查用户名是否存在
         User existingUser = userMapper.selectByUsername(dto.getUsername());
         if (existingUser != null) {
-            throw new BusinessException(ResultCode.USER_ALREADY_EXISTS);
+            throw new BusinessException(ResultCode.USER_ALREADY_EXISTS.getCode(),
+                "用户名已存在，请尝试其他用户名");
+        }
+
+        // 检查邮箱是否已被注册
+        if (StringUtils.hasText(dto.getEmail())) {
+            User existingEmail = userMapper.selectByEmail(dto.getEmail());
+            if (existingEmail != null) {
+                throw new BusinessException(ResultCode.EMAIL_ALREADY_EXISTS);
+            }
         }
 
         // 创建用户
@@ -70,6 +79,9 @@ public class UserServiceImpl implements UserService {
         user.setPassword(passwordEncoder.encode(dto.getPassword()));
         user.setNickname(StringUtils.hasText(dto.getNickname()) ? dto.getNickname() : dto.getUsername());
         user.setRole("USER"); // 默认普通用户
+        if (StringUtils.hasText(dto.getEmail())) {
+            user.setEmail(dto.getEmail());
+        }
 
         userMapper.insert(user);
 
