@@ -8,9 +8,9 @@
 |---|-------|------|--------------|------------------|
 | 6 | 权限体系重构 | 实现管理员/普通用户权限分离 | AUTH-03, AUTH-04, AUTH-05, AUTH-06, PERMISSION-01, PERMISSION-02, PERMISSION-03 | 3 |
 | 7 | 注册错误提示优化 | 修复重复注册错误提示不明确问题 | AUTH-01, AUTH-02 | 2 |
-| 8 | 场景互斥机制 | 实现场景分组互斥，启用时自动禁用同组场景 | SCENE-01, SCENE-02, SCENE-04 | 3 | ✓
+| 8 | 场景互斥机制 | 实现场景分组互斥，启用时自动禁用同组场景 | SCENE-01, SCENE-02, SCENE-04 | 3 | ✓ |
 | 9 | 场景设备联动 | 触发场景时同步更新关联设备状态 | SCENE-03 | 2 |
-| 10 | 内容数据扩充 | 补充电影/音乐/游戏示例数据 | CONTENT-01, CONTENT-02, CONTENT-03 | 3 | ✓
+| 10 | 内容数据扩充 | 补充电影/音乐/游戏示例数据 | CONTENT-01, CONTENT-02, CONTENT-03 | 3 | ✓ |
 | 11 | 内容推荐增强 | 推荐列表分类筛选与分组展示 | CONTENT-04, RECOMMEND-01, RECOMMEND-02, RECOMMEND-03 | 3 |
 
 ---
@@ -76,7 +76,21 @@
 
 ---
 
-### Phase 10: 内容数据扩充**Goal:** 补充电影/音乐/游戏示例数据**Requirements:** CONTENT-01, CONTENT-02, CONTENT-03**Success criteria:**1. 电影类型内容增加5-10条示例数据2. 音乐类型内容增加5-10条示例数据3. 游戏类型内容增加5-10条示例数据**Plans:**- [x] 10-01-PLAN.md — Expand content table with 24 new entries (8 movies, 8 music, 8 games) (2026-04-18)---
+### Phase 10: 内容数据扩充
+
+**Goal:** 补充电影/音乐/游戏示例数据
+
+**Requirements:** CONTENT-01, CONTENT-02, CONTENT-03
+
+**Success criteria:**
+1. 电影类型内容增加5-10条示例数据
+2. 音乐类型内容增加5-10条示例数据
+3. 游戏类型内容增加5-10条示例数据
+
+**Plans:**
+- [x] 10-01-PLAN.md — Expand content table with 24 new entries (8 movies, 8 music, 8 games) (2026-04-18)
+
+---
 
 ### Phase 11: 内容推荐增强
 
@@ -88,6 +102,11 @@
 1. 内容列表增加类型筛选参数
 2. 推荐列表按内容类型分组展示
 3. 用户偏好设置支持内容类型权重配置
+
+**Plans:**
+- [ ] 11-01-PLAN.md — DB migration V1.6 + entity/VO foundation (weight fields, GroupedRecommendationVO/Response)
+- [ ] 11-02-PLAN.md — RecommendationService/Controller type filtering and grouped response
+- [ ] 11-03-PLAN.md — Preference weight configuration API (D-04)
 
 ---
 
