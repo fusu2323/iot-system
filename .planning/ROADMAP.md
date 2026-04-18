@@ -8,7 +8,7 @@
 |---|-------|------|--------------|------------------|
 | 6 | 权限体系重构 | 实现管理员/普通用户权限分离 | AUTH-03, AUTH-04, AUTH-05, AUTH-06, PERMISSION-01, PERMISSION-02, PERMISSION-03 | 3 |
 | 7 | 注册错误提示优化 | 修复重复注册错误提示不明确问题 | AUTH-01, AUTH-02 | 2 |
-| 8 | 场景互斥机制 | 实现场景分组互斥，启用时自动禁用同组场景 | SCENE-01, SCENE-02, SCENE-04 | 3 |
+| 8 | 场景互斥机制 | 实现场景分组互斥，启用时自动禁用同组场景 | SCENE-01, SCENE-02, SCENE-04 | 3 | ✓
 | 9 | 场景设备联动 | 触发场景时同步更新关联设备状态 | SCENE-03 | 2 |
 | 10 | 内容数据扩充 | 补充电影/音乐/游戏示例数据 | CONTENT-01, CONTENT-02, CONTENT-03 | 3 |
 | 11 | 内容推荐增强 | 推荐列表分类筛选与分组展示 | CONTENT-04, RECOMMEND-01, RECOMMEND-02, RECOMMEND-03 | 3 |
@@ -45,6 +45,9 @@
 **Success criteria:**
 1. 用户名已存在时返回"用户名已存在，请尝试其他用户名"
 2. 邮箱已被注册时返回"该邮箱已被注册"
+
+**Plans:**
+- [x] 07-01-PLAN.md — Add email field, uniqueness checks, and clear error messages (2026-04-18)
 
 ---
 

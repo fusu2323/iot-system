@@ -1,3 +1,18 @@
+---
+gsd_state_version: 1.0
+milestone: v1.1
+milestone_name: Bug修复与权限增强
+status: executing
+last_updated: "2026-04-18T08:15:00.000Z"
+last_activity: 2026-04-18 — Phase 8 executed and committed (278d371)
+progress:
+  total_phases: 6
+  completed_phases: 3
+  total_plans: 6
+  completed_plans: 6
+  percent: 100
+---
+
 # STATE.md
 
 ## Current Position
@@ -21,12 +36,14 @@
 ## Accumulated Context
 
 **Phase 6 Decisions:**
+
 - 权限校验: @PreAuthorize注解
 - 用户列表过滤: Service层根据角色动态过滤
 - 删除权限: 管理员不能删除管理员和自己
 - 日志权限: @PreAuthorize("hasRole('ADMIN')")
 
 **Phase 8 Decisions:**
+
 - mutex_group: VARCHAR(50), human-readable string names
 - toggle(): @Transactional for atomic enable+auto-disable
 - SceneVO: activeGroupSceneId field for mutex group labeling
