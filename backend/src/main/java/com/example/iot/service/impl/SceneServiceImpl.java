@@ -180,6 +180,10 @@ public class SceneServiceImpl implements SceneService {
         }
 
         sceneMapper.updateById(scene);
+
+        // Sync linked devices to match scene state
+        syncDevices(id, newEnabled);
+
         log.info("scene toggled: {}, isEnabled={}", id, scene.getIsEnabled());
 
         // 记录操作日志
@@ -189,6 +193,7 @@ public class SceneServiceImpl implements SceneService {
     }
 
     @Override
+    @Transactional
     public void trigger(Long id) {
         Scene scene = sceneMapper.selectById(id);
         if (scene == null || scene.getDeleted() == 1) {
@@ -199,7 +204,9 @@ public class SceneServiceImpl implements SceneService {
             throw new BusinessException(ResultCode.SCENE_DEVICE_NOT_FOUND.getCode(), "场景已禁用，无法触发");
         }
 
-        // TODO: 触发场景，执行设备联动
+        // Sync all linked devices to enabled status
+        syncDevices(id, 1);
+
         log.info("场景触发成功：{}", id);
 
         // 记录操作日志
@@ -255,6 +262,25 @@ public class SceneServiceImpl implements SceneService {
         wrapper.eq(SceneDevice::getSceneId, sceneId);
         List<SceneDevice> sceneDevices = sceneDeviceMapper.selectList(wrapper);
         return sceneDevices.stream().map(SceneDevice::getDeviceId).collect(Collectors.toList());
+    }
+
+    /**
+     * Sync all linked devices to target status when scene is enabled/disabled.
+     * @param sceneId the scene ID
+     * @param targetStatus 1=enabled, 0=disabled
+     */
+    private void syncDevices(Long sceneId, Integer targetStatus) {
+        LambdaQueryWrapper<SceneDevice> wrapper = new LambdaQueryWrapper<>();
+        wrapper.eq(SceneDevice::getSceneId, sceneId);
+        List<SceneDevice> sceneDevices = sceneDeviceMapper.selectList(wrapper);
+        for (SceneDevice sd : sceneDevices) {
+            Device device = deviceMapper.selectById(sd.getDeviceId());
+            if (device != null && device.getDeleted() == 0) {
+                device.setStatus(targetStatus);
+                deviceMapper.updateById(device);
+                log.info("device sync: deviceId={}, sceneId={}, status={}", device.getId(), sceneId, targetStatus);
+            }
+        }
     }
 
     /**

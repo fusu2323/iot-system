@@ -17,10 +17,16 @@ progress:
 
 ## Current Position
 
-**Phase:** 8 — 场景互斥机制 (Planned)
-**Plan:** 08-01 (1 plan in wave 1)
-**Status:** Ready to execute
-**Last activity:** 2026-04-18 — Phase 8 planned
+**Phase:** 9 — 场景设备联动 (Completed)
+**Plan:** 09-01 (executed)
+**Status:** Closed — SUMMARY.md created
+**Last activity:** 2026-04-18 — Phase 9 implemented (syncDevices + trigger() + toggle() update)
+
+**Phase 9 Decisions (D-01 through D-07):**
+- Device sync in trigger(), not toggle()
+- Enable → all linked devices status=1
+- Disable → all linked devices status=0
+- Shared syncDevices() helper method
 
 ## Session Info
 
