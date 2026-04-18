@@ -29,10 +29,10 @@
 3. 普通用户不能访问 /api/logs 接口（返回403）
 
 **Plans:**
-- [ ] 06-01-PLAN.md — Create SecurityContextUtil for current user extraction
-- [ ] 06-02-PLAN.md — Add @PreAuthorize to LogController (admin-only logs)
-- [ ] 06-03-PLAN.md — Update UserController with @PreAuthorize and SecurityContextUtil
-- [ ] 06-04-PLAN.md — Update UserService.list() and delete() with role filtering
+- [x] 06-01-PLAN.md — Create SecurityContextUtil for current user extraction (2026-04-18)
+- [x] 06-02-PLAN.md — Add @PreAuthorize to LogController (admin-only logs) (2026-04-18)
+- [x] 06-03-PLAN.md — Update UserController with @PreAuthorize and SecurityContextUtil (2026-04-18)
+- [x] 06-04-PLAN.md — Update UserService.list() and delete() with role filtering (2026-04-18)
 
 ---
 
