@@ -2,10 +2,10 @@
 
 ## Current Position
 
-**Phase:** 7 — 注册错误提示优化 (Complete)
-**Plan:** 07-01 (complete)
-**Status:** Phase complete — verification passed
-**Last activity:** 2026-04-18 — Phase 7 executed and verified
+**Phase:** 8 — 场景互斥机制 (Context gathered)
+**Plan:** None yet
+**Status:** Ready for planning
+**Last activity:** 2026-04-18 — Phase 8 context captured
 
 ## Session Info
 
@@ -15,6 +15,9 @@
 **Phase 7 context:** `.planning/phases/07-auth-error/07-CONTEXT.md`
 **Discussion log:** `.planning/phases/07-auth-error/07-DISCUSSION-LOG.md`
 
+**Phase 8 context:** `.planning/phases/08-scene-mutex/08-CONTEXT.md`
+**Discussion log:** `.planning/phases/08-scene-mutex/08-DISCUSSION-LOG.md`
+
 ## Accumulated Context
 
 **Phase 6 Decisions:**
@@ -22,3 +25,9 @@
 - 用户列表过滤: Service层根据角色动态过滤
 - 删除权限: 管理员不能删除管理员和自己
 - 日志权限: @PreAuthorize("hasRole('ADMIN')")
+
+**Phase 8 Decisions:**
+- mutex_group: VARCHAR(50), human-readable string names
+- toggle(): @Transactional for atomic enable+auto-disable
+- SceneVO: activeGroupSceneId field for mutex group labeling
+- Migration: existing scenes get NULL (non-exclusive)
