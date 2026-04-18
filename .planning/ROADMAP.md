@@ -76,18 +76,7 @@
 
 ---
 
-### Phase 10: 内容数据扩充
-
-**Goal:** 补充电影/音乐/游戏示例数据
-
-**Requirements:** CONTENT-01, CONTENT-02, CONTENT-03
-
-**Success criteria:**
-1. 电影类型内容增加5-10条示例数据
-2. 音乐类型内容增加5-10条示例数据
-3. 游戏类型内容增加5-10条示例数据
-
----
+### Phase 10: 内容数据扩充**Goal:** 补充电影/音乐/游戏示例数据**Requirements:** CONTENT-01, CONTENT-02, CONTENT-03**Success criteria:**1. 电影类型内容增加5-10条示例数据2. 音乐类型内容增加5-10条示例数据3. 游戏类型内容增加5-10条示例数据**Plans:**- [ ] 10-01-PLAN.md — Expand content table with 24 new entries (8 movies, 8 music, 8 games)---
 
 ### Phase 11: 内容推荐增强
 
