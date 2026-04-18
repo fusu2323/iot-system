@@ -17,14 +17,14 @@ progress:
 
 ## Current Position
 
-**Phase:** 10 — 内容数据扩充 (Context gathered)
-**Status:** Ready for planning
-**Last activity:** 2026-04-18 — Phase 10 context created
+**Phase:** 10 — 内容数据扩充 (Complete)
+**Status:** Phase execution complete
+**Last activity:** 2026-04-18 — Phase 10 executed and verified
 
-**Phase 10 Decisions:**
-- Real titles for movies/music/games
-- 8 entries per type (24 new total)
-- WHERE NOT EXISTS idempotency pattern
+**Phase 10 Summary:**
+- V1.5__expand_content_data.sql created with 24 idempotent INSERTs (8 movies, 8 music, 8 games)
+- Commit: 042377d
+- Verification: PASSED (4/4 must-haves)
 
 **Phase 9 Decisions (D-01 through D-07):**
 - Device sync in trigger(), not toggle()
