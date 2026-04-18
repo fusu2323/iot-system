@@ -17,10 +17,14 @@ progress:
 
 ## Current Position
 
-**Phase:** 9 — 场景设备联动 (Completed)
-**Plan:** 09-01 (executed)
-**Status:** Closed — SUMMARY.md created
-**Last activity:** 2026-04-18 — Phase 9 implemented (syncDevices + trigger() + toggle() update)
+**Phase:** 10 — 内容数据扩充 (Context gathered)
+**Status:** Ready for planning
+**Last activity:** 2026-04-18 — Phase 10 context created
+
+**Phase 10 Decisions:**
+- Real titles for movies/music/games
+- 8 entries per type (24 new total)
+- WHERE NOT EXISTS idempotency pattern
 
 **Phase 9 Decisions (D-01 through D-07):**
 - Device sync in trigger(), not toggle()
@@ -38,6 +42,12 @@ progress:
 
 **Phase 8 context:** `.planning/phases/08-scene-mutex/08-CONTEXT.md`
 **Discussion log:** `.planning/phases/08-scene-mutex/08-DISCUSSION-LOG.md`
+
+**Phase 9 context:** `.planning/phases/09-scene-device/09-CONTEXT.md`
+**Discussion log:** `.planning/phases/09-scene-device/09-DISCUSSION-LOG.md`
+
+**Phase 10 context:** `.planning/phases/10-content-data/10-CONTEXT.md`
+**Discussion log:** `.planning/phases/10-content-data/10-DISCUSSION-LOG.md`
 
 ## Accumulated Context
 
