@@ -2,10 +2,10 @@
 
 ## Current Position
 
-**Phase:** 8 — 场景互斥机制 (Context gathered)
-**Plan:** None yet
-**Status:** Ready for planning
-**Last activity:** 2026-04-18 — Phase 8 context captured
+**Phase:** 8 — 场景互斥机制 (Planned)
+**Plan:** 08-01 (1 plan in wave 1)
+**Status:** Ready to execute
+**Last activity:** 2026-04-18 — Phase 8 planned
 
 ## Session Info
 
