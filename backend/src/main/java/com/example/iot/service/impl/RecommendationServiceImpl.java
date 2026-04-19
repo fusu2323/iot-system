@@ -195,7 +195,8 @@ public class RecommendationServiceImpl implements RecommendationService {
         // 更新用户偏好
         Content content = contentMapper.selectById(contentId);
         if (content != null) {
-            updateUserPreferenceScore(userId, content.getType(), 5); // CLICK_WEIGHT
+            int weight = getConfigurableWeight(userId, content.getType(), "CLICK");
+            updateUserPreferenceScore(userId, content.getType(), weight);
         }
 
         // 记录反馈
@@ -211,7 +212,8 @@ public class RecommendationServiceImpl implements RecommendationService {
         // 更新用户偏好
         Content content = contentMapper.selectById(contentId);
         if (content != null) {
-            updateUserPreferenceScore(userId, content.getType(), 10); // LIKE_WEIGHT
+            int weight = getConfigurableWeight(userId, content.getType(), "LIKE");
+            updateUserPreferenceScore(userId, content.getType(), weight);
         }
 
         // 记录反馈
@@ -227,7 +229,8 @@ public class RecommendationServiceImpl implements RecommendationService {
         // 更新用户偏好
         Content content = contentMapper.selectById(contentId);
         if (content != null) {
-            updateUserPreferenceScore(userId, content.getType(), -20); // DISLIKE_WEIGHT
+            int weight = getConfigurableWeight(userId, content.getType(), "DISLIKE");
+            updateUserPreferenceScore(userId, content.getType(), weight);
         }
 
         // 记录反馈
@@ -242,7 +245,7 @@ public class RecommendationServiceImpl implements RecommendationService {
         // 根据反馈类型更新用户偏好
         Content content = contentMapper.selectById(dto.getContentId());
         if (content != null) {
-            int weight = getFeedbackWeight(dto.getFeedbackType());
+            int weight = getConfigurableWeight(dto.getUserId(), content.getType(), dto.getFeedbackType());
             updateUserPreferenceScore(dto.getUserId(), content.getType(), weight);
         }
     }
@@ -270,11 +273,14 @@ public class RecommendationServiceImpl implements RecommendationService {
             existing.setPreferenceScore(newScore);
             userPreferenceMapper.updateById(existing);
         } else {
-            // 创建新偏好
+            // 创建新偏好，设置默认权重
             UserPreference preference = new UserPreference();
             preference.setUserId(userId);
             preference.setContentType(contentType);
             preference.setPreferenceScore(Math.max(0, deltaScore));
+            preference.setClickWeight(5);
+            preference.setLikeWeight(10);
+            preference.setDislikeWeight(-20);
             userPreferenceMapper.insert(preference);
         }
     }
@@ -405,18 +411,41 @@ public class RecommendationServiceImpl implements RecommendationService {
     }
 
     /**
-     * 获取反馈权重
-     * TODO: 将在11-03计划中替换为可配置权重
+     * 获取可配置的反馈权重
+     * 从 UserPreference 表中获取用户设置的权重，若未设置则使用默认值
      */
-    private int getFeedbackWeight(String feedbackType) {
+    private int getConfigurableWeight(Long userId, String contentType, String feedbackType) {
+        UserPreference pref = userPreferenceMapper.selectByUserIdAndContentType(userId, contentType);
+
+        if (pref == null) {
+            return getDefaultWeight(feedbackType);
+        }
+
         switch (feedbackType) {
+            case "CLICK":
+                return (pref.getClickWeight() != null) ? pref.getClickWeight() : 5;
             case "LIKE":
             case "COLLECT":
-                return 10;  // LIKE_WEIGHT
+                return (pref.getLikeWeight() != null) ? pref.getLikeWeight() : 10;
             case "DISLIKE":
-                return -20; // DISLIKE_WEIGHT
+                return (pref.getDislikeWeight() != null) ? pref.getDislikeWeight() : -20;
+            default:
+                return 0;
+        }
+    }
+
+    /**
+     * 获取默认权重
+     */
+    private int getDefaultWeight(String feedbackType) {
+        switch (feedbackType) {
             case "CLICK":
-                return 5;    // CLICK_WEIGHT
+                return 5;
+            case "LIKE":
+            case "COLLECT":
+                return 10;
+            case "DISLIKE":
+                return -20;
             default:
                 return 0;
         }
