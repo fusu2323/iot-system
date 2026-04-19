@@ -11,7 +11,7 @@
 | 8 | 场景互斥机制 | 实现场景分组互斥，启用时自动禁用同组场景 | SCENE-01, SCENE-02, SCENE-04 | 3 | ✓ |
 | 9 | 场景设备联动 | 触发场景时同步更新关联设备状态 | SCENE-03 | 2 |
 | 10 | 内容数据扩充 | 补充电影/音乐/游戏示例数据 | CONTENT-01, CONTENT-02, CONTENT-03 | 3 | ✓ |
-| 11 | 内容推荐增强 | 推荐列表分类筛选与分组展示 | CONTENT-04, RECOMMEND-01, RECOMMEND-02, RECOMMEND-03 | 3 |
+| 11 | 内容推荐增强 | 推荐列表分类筛选与分组展示 | CONTENT-04, RECOMMEND-01, RECOMMEND-02, RECOMMEND-03 | 3 | ✓ |
 
 ---
 
@@ -104,9 +104,10 @@
 3. 用户偏好设置支持内容类型权重配置
 
 **Plans:**
-- [ ] 11-01-PLAN.md — DB migration V1.6 + entity/VO foundation (weight fields, GroupedRecommendationVO/Response)
-- [ ] 11-02-PLAN.md — RecommendationService/Controller type filtering and grouped response
-- [ ] 11-03-PLAN.md — Preference weight configuration API (D-04)
+- [x] 11-01-PLAN.md — DB migration V1.6 + entity/VO foundation (weight fields, GroupedRecommendationVO/Response) (2026-04-19)
+- [x] 11-02-PLAN.md — RecommendationService/Controller type filtering and grouped response (2026-04-19)
+- [x] 11-03-PLAN.md — Preference weight configuration API (D-04) (2026-04-19)
+- [x] 11-04-PLAN.md — CONTENT-04: Content list type filtering verification (2026-04-19)
 
 ---
 

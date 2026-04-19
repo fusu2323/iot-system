@@ -3,13 +3,13 @@ gsd_state_version: 1.0
 milestone: v1.1
 milestone_name: Bug修复与权限增强
 status: executing
-last_updated: "2026-04-18T08:15:00.000Z"
-last_activity: 2026-04-18 — Phase 8 executed and committed (278d371)
+last_updated: "2026-04-19T04:30:00.000Z"
+last_activity: 2026-04-19 — Phase 11 executed and verified
 progress:
-  total_phases: 6
-  completed_phases: 3
-  total_plans: 6
-  completed_plans: 6
+  total_phases: 7
+  completed_phases: 4
+  total_plans: 10
+  completed_plans: 10
   percent: 100
 ---
 
@@ -17,20 +17,23 @@ progress:
 
 ## Current Position
 
-**Phase:** 10 — 内容数据扩充 (Complete)
+**Phase:** 11 — 内容推荐增强 (Complete)
 **Status:** Phase execution complete
-**Last activity:** 2026-04-18 — Phase 10 executed and verified
+**Last activity:** 2026-04-19 — Phase 11 executed and verified
 
-**Phase 10 Summary:**
-- V1.5__expand_content_data.sql created with 24 idempotent INSERTs (8 movies, 8 music, 8 games)
-- Commit: 042377d
+**Phase 11 Summary:**
+- V1.6__add_preference_weights.sql: click_weight/like_weight/dislike_weight columns added
+- GroupedRecommendationVO/Response for type-grouped recommendations
+- RecommendationService type filtering + grouped response (RECOMMEND-01, RECOMMEND-02)
+- UserPreference weight configuration API (RECOMMEND-03)
+- ContentController type filtering verified (CONTENT-04)
+- Commits: d0c84cb through 2c8c83d
 - Verification: PASSED (4/4 must-haves)
 
-**Phase 9 Decisions (D-01 through D-07):**
-- Device sync in trigger(), not toggle()
-- Enable → all linked devices status=1
-- Disable → all linked devices status=0
-- Shared syncDevices() helper method
+**Phase 11 Decisions:**
+- getRecommendations() 增加可选 type 参数
+- 推荐结果按内容类型分组返回，新增 GroupedRecommendationVO 结构
+- UserPreference 增加 click_weight/like_weight/dislike_weight 字段，默认值 5/10/-20
 
 ## Session Info
 
@@ -49,6 +52,9 @@ progress:
 **Phase 10 context:** `.planning/phases/10-content-data/10-CONTEXT.md`
 **Discussion log:** `.planning/phases/10-content-data/10-DISCUSSION-LOG.md`
 
+**Phase 11 context:** `.planning/phases/11-content-recommendation/11-CONTEXT.md`
+**Discussion log:** `.planning/phases/11-content-recommendation/11-DISCUSSION-LOG.md`
+
 ## Accumulated Context
 
 **Phase 6 Decisions:**
@@ -64,3 +70,9 @@ progress:
 - toggle(): @Transactional for atomic enable+auto-disable
 - SceneVO: activeGroupSceneId field for mutex group labeling
 - Migration: existing scenes get NULL (non-exclusive)
+
+**Phase 11 Decisions:**
+
+- getRecommendations() 增加可选 type 参数
+- 推荐结果按内容类型分组返回，新增 GroupedRecommendationVO 结构
+- UserPreference 增加 click_weight/like_weight/dislike_weight 字段，默认值 5/10/-20
