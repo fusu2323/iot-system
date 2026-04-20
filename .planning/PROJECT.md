@@ -12,70 +12,63 @@
 - 多用户权限管理（管理员/普通用户）
 - 微信小程序便捷访问
 
-## 3. Current Milestone: v1.1 Bug修复与权限增强
+## 3. Current Milestone: v1.1 COMPLETE
 
-**目标:** 修复关键Bug并增强用户权限与内容管理
+**v1.1 Bug修复与权限增强 — SHIPPED 2026-04-19**
 
-**Target features:**
-- AUTH-01: 注册失败时显示具体原因（用户名重复/已注册）
-- SCENE-01: 场景互斥 - 居家/离家等互斥场景不能同时启用
-- SCENE-02: 触发场景时，关联设备的启用/禁用状态应同步更新
-- CONTENT-01: 补充更多内容管理示例数据
-- RECOMMEND-01: 推荐管理细化，明确分类
-- AUTH-02: 管理员权限定义（可添加/删除哪些）
-- AUTH-03: 普通用户权限限制（不能删除他人信息，不能查看所有日志）
+6 phases completed (06-11), 10 plans, 20/20 requirements validated.
 
-## 4. Active Requirements
+## 4. Validated Requirements
+
+### v1.0 Foundation
+- ✓ 用户注册与认证 (AUTH-01, AUTH-02)
+- ✓ 设备管理基础 (DEVICE-01, DEVICE-02)
+- ✓ 场景管理基础 (SCENE-01 via 08)
 
 ### v1.1 Bug修复与权限增强
+- ✓ AUTH-01/02: 明确的注册错误提示
+- ✓ AUTH-03/04/05/06: 管理员/普通用户权限分离
+- ✓ SCENE-01/02/04: 场景互斥机制
+- ✓ SCENE-03: 场景设备联动
+- ✓ CONTENT-01/02/03/04: 内容数据扩充与类型筛选
+- ✓ RECOMMEND-01/02/03: 推荐增强与权重配置
+- ✓ PERMISSION-01/02/03: 接口权限校验
 
-- [ ] **AUTH-01**: 注册时如果用户名已存在，返回明确错误信息"用户名已存在"
-- [ ] **SCENE-01**: 场景管理实现互斥机制 - 标记互斥场景组，启用一个时自动禁用同组其他场景
-- [ ] **SCENE-02**: 触发场景时，同步更新关联设备的启用/禁用状态
-- [ ] **CONTENT-01**: 补充内容管理示例数据（电影/音乐/游戏各增加5-10条）
-- [ ] **RECOMMEND-01**: 推荐管理增加分类筛选功能
-- [ ] **AUTH-02**: 定义管理员可执行的操作（用户管理、日志查看、系统配置）
-- [ ] **AUTH-03**: 普通用户权限限制（只能管理自己的设备和场景，不能删除其他用户，不能查看他人日志）
+## 5. Active Requirements
 
-## 5. Validated Requirements
-
-（无）
+（无 — v1.1 完成，下一 milestone 尚未规划）
 
 ## 6. Out of Scope
 
 - 物联网设备真实通信
-- 微信小程序开发（Phase 8）
-- Web管理后台Vue开发（Phase 7）
+- 微信小程序开发
+- Web管理后台Vue开发
+- 定时触发场景功能
+- 预设场景模板
 
 ## 7. Key Decisions
 
-- 采用 Spring Security + JWT 实现认证授权
-- 使用 MyBatis-Plus 作为 ORM
-- 场景互斥通过 scene_mutex_group 字段实现
+| Decision | Outcome |
+|----------|---------|
+| Spring Security + JWT 认证 | ✅ 继续使用 |
+| MyBatis-Plus ORM | ✅ 继续使用 |
+| 场景互斥通过 scene_mutex_group 字段 | ✅ 已实现 |
+| Device sync in trigger(), not toggle() | ✅ 集中管理 |
+| getRecommendations() 返回 GroupedRecommendationResponse | ✅ 已实现 |
+| UserPreference weight 字段: clickWeight/likeWeight/dislikeWeight | ✅ 已实现 |
 
 ## 8. Context
 
-- 技术栈: Spring Boot 3.x + MySQL 8.x + Vue 3
+- 技术栈: Spring Boot 3.x + MySQL 8.x + Spring Security + JWT
 - 项目结构: 前后端分离
-- 当前进度: Phase 1-6 已完成，v1.0 发布
+- 当前进度: v1.1 完成 (Phase 06-11), 20/20 requirements validated
+- 代码规模: ~15 commits across v1.1 phases
+- v1.1 Timeline: 2026-04-18 → 2026-04-19 (1 day)
 
-## 9. Evolution
+## 9. Next Milestone
 
-This document evolves at phase transitions and milestone boundaries.
-
-**After each phase transition** (via `/gsd-transition`):
-1. Requirements invalidated? → Move to Out of Scope with reason
-2. Requirements validated? → Move to Validated with phase reference
-3. New requirements emerged? → Add to Active
-4. Decisions to log? → Add to Key Decisions
-5. "What This Is" still accurate? → Update if drifted
-
-**After each milestone** (via `/gsd-complete-milestone`):
-1. Full review of all sections
-2. Core Value check — still the right priority?
-3. Audit Out of Scope — reasons still valid?
-4. Update Context with current state
+尚未规划。使用 `/gsd-new-milestone` 开始 v1.2 或后续版本规划。
 
 ---
 
-**Last updated:** 2026-04-18
+**Last updated:** 2026-04-19 after v1.1 milestone completion

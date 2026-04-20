@@ -1,115 +1,55 @@
 # ROADMAP.md — Milestone v1.1
 
-## v1.1 Bug修复与权限增强
+## Milestones
 
-**8 phases** | **20 requirements mapped** | All covered ✓
+- ✅ **v1.0 MVP** — Initial foundation (Phase 1-5)
+- ✅ **v1.1 Bug修复与权限增强** — Phases 06-11 (shipped 2026-04-19)
 
-| # | Phase | Goal | Requirements | Success Criteria |
-|---|-------|------|--------------|------------------|
-| 6 | 权限体系重构 | 实现管理员/普通用户权限分离 | AUTH-03, AUTH-04, AUTH-05, AUTH-06, PERMISSION-01, PERMISSION-02, PERMISSION-03 | 3 |
-| 7 | 注册错误提示优化 | 修复重复注册错误提示不明确问题 | AUTH-01, AUTH-02 | 2 |
-| 8 | 场景互斥机制 | 实现场景分组互斥，启用时自动禁用同组场景 | SCENE-01, SCENE-02, SCENE-04 | 3 | ✓ |
-| 9 | 场景设备联动 | 触发场景时同步更新关联设备状态 | SCENE-03 | 2 |
-| 10 | 内容数据扩充 | 补充电影/音乐/游戏示例数据 | CONTENT-01, CONTENT-02, CONTENT-03 | 3 | ✓ |
-| 11 | 内容推荐增强 | 推荐列表分类筛选与分组展示 | CONTENT-04, RECOMMEND-01, RECOMMEND-02, RECOMMEND-03 | 3 | ✓ |
+## Phase Progress
 
----
+| Phase | Milestone | Plans | Status | Completed |
+|-------|-----------|-------|--------|-----------|
+| 06 | v1.1 | 4/4 | ✅ Complete | 2026-04-18 |
+| 07 | v1.1 | 1/1 | ✅ Complete | 2026-04-18 |
+| 08 | v1.1 | 1/1 | ✅ Complete | 2026-04-18 |
+| 09 | v1.1 | 1/1 | ✅ Complete | 2026-04-18 |
+| 10 | v1.1 | 1/1 | ✅ Complete | 2026-04-18 |
+| 11 | v1.1 | 4/4 | ✅ Complete | 2026-04-19 |
 
-## Phase Details
+## Completed Milestones
 
-### Phase 6: 权限体系重构
+<details>
+<summary>✅ v1.1 Bug修复与权限增强 (Phases 06-11) — SHIPPED 2026-04-19</summary>
 
-**Goal:** 实现管理员/普通用户权限分离，接口层面实施权限校验
+### Phase 06: 权限体系重构
+- [x] 06-01-PLAN.md — Create SecurityContextUtil for current user extraction
+- [x] 06-02-PLAN.md — Add @PreAuthorize to LogController (admin-only logs)
+- [x] 06-03-PLAN.md — Update UserController with @PreAuthorize and SecurityContextUtil
+- [x] 06-04-PLAN.md — Update UserService.list() and delete() with role filtering
 
-**Requirements:** AUTH-03, AUTH-04, AUTH-05, AUTH-06, PERMISSION-01, PERMISSION-02, PERMISSION-03
+### Phase 07: 注册错误提示优化
+- [x] 07-01-PLAN.md — Add email field, uniqueness checks, and clear error messages
 
-**Success criteria:**
-1. 管理员可以查看所有用户列表，普通用户只能查看自己
-2. 管理员可以删除普通用户，普通用户不能删除任何用户
-3. 普通用户不能访问 /api/logs 接口（返回403）
+### Phase 08: 场景互斥机制
+- [x] 08-01-PLAN.md — Implement scene mutex mechanism with toggle() and mutex_group field
 
-**Plans:**
-- [x] 06-01-PLAN.md — Create SecurityContextUtil for current user extraction (2026-04-18)
-- [x] 06-02-PLAN.md — Add @PreAuthorize to LogController (admin-only logs) (2026-04-18)
-- [x] 06-03-PLAN.md — Update UserController with @PreAuthorize and SecurityContextUtil (2026-04-18)
-- [x] 06-04-PLAN.md — Update UserService.list() and delete() with role filtering (2026-04-18)
-
----
-
-### Phase 7: 注册错误提示优化
-
-**Goal:** 修复重复注册错误提示不明确问题
-
-**Requirements:** AUTH-01, AUTH-02
-
-**Success criteria:**
-1. 用户名已存在时返回"用户名已存在，请尝试其他用户名"
-2. 邮箱已被注册时返回"该邮箱已被注册"
-
-**Plans:**
-- [x] 07-01-PLAN.md — Add email field, uniqueness checks, and clear error messages (2026-04-18)
-
----
-
-### Phase 8: 场景互斥机制
-
-**Goal:** 实现场景分组互斥，启用时自动禁用同组场景
-
-**Requirements:** SCENE-01, SCENE-02, SCENE-04
-
-**Success criteria:**
-1. 场景表增加 mutex_group 字段，支持NULL表示非互斥场景
-2. 启用场景时，同mutex_group的其他场景自动禁用
-3. 场景列表返回时标注当前启用的互斥组
-
----
-
-### Phase 9: 场景设备联动
-
-**Goal:** 触发场景时同步更新关联设备状态
-
-**Requirements:** SCENE-03
-
-**Success criteria:**
-1. 触发场景时，场景关联的设备状态同步更新为启用
-2. 禁用场景时，关联设备状态同步更新为禁用
-
----
+### Phase 09: 场景设备联动
+- [x] 09-01-PLAN.md — Implement scene-device state sync
 
 ### Phase 10: 内容数据扩充
-
-**Goal:** 补充电影/音乐/游戏示例数据
-
-**Requirements:** CONTENT-01, CONTENT-02, CONTENT-03
-
-**Success criteria:**
-1. 电影类型内容增加5-10条示例数据
-2. 音乐类型内容增加5-10条示例数据
-3. 游戏类型内容增加5-10条示例数据
-
-**Plans:**
-- [x] 10-01-PLAN.md — Expand content table with 24 new entries (8 movies, 8 music, 8 games) (2026-04-18)
-
----
+- [x] 10-01-PLAN.md — Expand content table with 24 new entries (8 movies, 8 music, 8 games)
 
 ### Phase 11: 内容推荐增强
+- [x] 11-01-PLAN.md — DB migration V1.6 + entity/VO foundation (weight fields, GroupedRecommendationVO/Response)
+- [x] 11-02-PLAN.md — RecommendationService/Controller type filtering and grouped response
+- [x] 11-03-PLAN.md — Preference weight configuration API
+- [x] 11-04-PLAN.md — CONTENT-04: Content list type filtering verification
 
-**Goal:** 推荐列表分类筛选与分组展示
+</details>
 
-**Requirements:** CONTENT-04, RECOMMEND-01, RECOMMEND-02, RECOMMEND-03
+## Backlog
 
-**Success criteria:**
-1. 内容列表增加类型筛选参数
-2. 推荐列表按内容类型分组展示
-3. 用户偏好设置支持内容类型权重配置
-
-**Plans:**
-- [x] 11-01-PLAN.md — DB migration V1.6 + entity/VO foundation (weight fields, GroupedRecommendationVO/Response) (2026-04-19)
-- [x] 11-02-PLAN.md — RecommendationService/Controller type filtering and grouped response (2026-04-19)
-- [x] 11-03-PLAN.md — Preference weight configuration API (D-04) (2026-04-19)
-- [x] 11-04-PLAN.md — CONTENT-04: Content list type filtering verification (2026-04-19)
-
----
+（无）
 
 ## Phase Dependency Graph
 
