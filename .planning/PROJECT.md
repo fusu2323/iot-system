@@ -12,11 +12,18 @@
 - 多用户权限管理（管理员/普通用户）
 - 微信小程序便捷访问
 
-## 3. Current Milestone: v1.1 COMPLETE
+## 3. Current Milestone: v1.2 论文初稿撰写
 
-**v1.1 Bug修复与权限增强 — SHIPPED 2026-04-19**
+**Goal:** 完成智能家居娱乐管理系统论文初稿，涵盖研究背景、可行性分析、需求分析、概要设计、详细设计、软件测试等内容。
 
-6 phases completed (06-11), 10 plans, 20/20 requirements validated.
+**Target features:**
+- 研究背景与意义
+- 研究现状分析
+- 可行性分析（技术、经济、操作）
+- 需求分析（用例图、功能分析、性能分析）
+- 概要设计（数据库ER图、功能模块图、时序图）
+- 详细设计（程序流程图）
+- 软件测试（白盒测试报告、黑盒测试报告）
 
 ## 4. Validated Requirements
 
@@ -36,7 +43,15 @@
 
 ## 5. Active Requirements
 
-（无 — v1.1 完成，下一 milestone 尚未规划）
+### v1.2 论文初稿撰写
+- [ ] **THESIS-01**: 研究背景章节
+- [ ] **THESIS-02**: 研究意义章节
+- [ ] **THESIS-03**: 研究现状章节
+- [ ] **THESIS-04**: 可行性分析章节（技术/经济/操作）
+- [ ] **THESIS-05**: 需求分析（用例图、功能分析、性能分析）
+- [ ] **THESIS-06**: 概要设计（ER图、功能模块图、时序图）
+- [ ] **THESIS-07**: 详细设计（程序流程图）
+- [ ] **THESIS-08**: 软件测试（白盒测试报告、黑盒测试报告）
 
 ## 6. Out of Scope
 
@@ -61,14 +76,13 @@
 
 - 技术栈: Spring Boot 3.x + MySQL 8.x + Spring Security + JWT
 - 项目结构: 前后端分离
-- 当前进度: v1.1 完成 (Phase 06-11), 20/20 requirements validated
-- 代码规模: ~15 commits across v1.1 phases
-- v1.1 Timeline: 2026-04-18 → 2026-04-19 (1 day)
+- 当前进度: v1.2 论文初稿撰写中
+- 代码规模: v1.0 + v1.1 完成
 
 ## 9. Next Milestone
 
-尚未规划。使用 `/gsd-new-milestone` 开始 v1.2 或后续版本规划。
+v1.2 论文初稿撰写 — 进行中
 
 ---
 
-**Last updated:** 2026-04-19 after v1.1 milestone completion
+**Last updated:** 2026-04-20 after v1.2 milestone start

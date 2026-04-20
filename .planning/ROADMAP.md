@@ -1,9 +1,10 @@
-# ROADMAP.md — Milestone v1.1
+# ROADMAP.md — Milestone v1.2
 
 ## Milestones
 
 - ✅ **v1.0 MVP** — Initial foundation (Phase 1-5)
 - ✅ **v1.1 Bug修复与权限增强** — Phases 06-11 (shipped 2026-04-19)
+- 🔄 **v1.2 论文初稿撰写** — Phase 12-17 (in progress)
 
 ## Phase Progress
 
@@ -15,6 +16,108 @@
 | 09 | v1.1 | 1/1 | ✅ Complete | 2026-04-18 |
 | 10 | v1.1 | 1/1 | ✅ Complete | 2026-04-18 |
 | 11 | v1.1 | 4/4 | ✅ Complete | 2026-04-19 |
+
+## v1.2 论文初稿撰写 Phases
+
+### Phase 12: 论文结构规划与研究背景撰写
+**Goal:** 完成论文目录结构、研究背景、研究意义、研究现状章节
+
+**Requirements:** THESIS-01, THESIS-02, THESIS-03, THESIS-04
+
+**Success criteria:**
+1. 完成论文完整目录结构设计
+2. 完成研究背景章节（行业现状、问题陈述）
+3. 完成研究意义章节（系统价值阐述）
+4. 完成研究现状章节（国内外技术调研）
+
+---
+
+### Phase 13: 可行性分析与需求分析
+**Goal:** 完成可行性分析、需求分析章节（用例图、功能分析、性能分析）
+
+**Requirements:** THESIS-05, THESIS-06, THESIS-07, THESIS-08, THESIS-09, THESIS-10
+
+**Success criteria:**
+1. 完成技术可行性分析（Spring Boot + MySQL + JWT技术栈）
+2. 完成经济可行性分析
+3. 完成操作可行性分析
+4. 完成用例图设计（管理员/普通用户）
+5. 完成功能分析（设备管理、场景管理、内容推荐、用户管理）
+6. 完成性能分析（响应时间、并发支持）
+
+---
+
+### Phase 14: 概要设计
+**Goal:** 完成概要设计章节（ER图、功能模块图、时序图）
+
+**Requirements:** THESIS-11, THESIS-12, THESIS-13
+
+**Success criteria:**
+1. 完成数据库ER图设计（user, device, scene, scene_device, content, user_preference, recommendation, operation_log等实体关系）
+2. 完成功能模块图设计（系统架构图）
+3. 完成核心时序图（用户登录、设备控制、场景触发、推荐生成）
+
+---
+
+### Phase 15: 详细设计
+**Goal:** 完成详细设计章节（程序流程图）
+
+**Requirements:** THESIS-14
+
+**Success criteria:**
+1. 完成设备管理程序流程图
+2. 完成场景触发程序流程图
+3. 完成推荐算法程序流程图
+
+---
+
+### Phase 16: 软件测试
+**Goal:** 完成软件测试章节（白盒测试报告、黑盒测试报告）
+
+**Requirements:** THESIS-15, THESIS-16
+
+**Success criteria:**
+1. 完成白盒测试报告（单元测试、集成测试用例）
+2. 完成黑盒测试报告（功能测试、接口测试用例）
+3. 完成测试总结
+
+---
+
+### Phase 17: 总结与展望
+**Goal:** 完成总结与展望章节
+
+**Requirements:** THESIS-17, THESIS-18
+
+**Success criteria:**
+1. 完成总结章节（系统功能、技术实现总结）
+2. 完成展望与未来工作章节
+
+---
+
+## Phase Dependency Graph
+
+```
+Phase 12 (研究背景与现状)
+           │
+           ▼
+Phase 13 (可行性与需求分析)
+           │
+           ▼
+Phase 14 (概要设计)
+           │
+           ▼
+Phase 15 (详细设计)
+           │
+           ▼
+Phase 16 (软件测试)
+           │
+           ▼
+Phase 17 (总结与展望)
+```
+
+## Backlog
+
+（无）
 
 ## Completed Milestones
 
@@ -46,28 +149,3 @@
 - [x] 11-04-PLAN.md — CONTENT-04: Content list type filtering verification
 
 </details>
-
-## Backlog
-
-（无）
-
-## Phase Dependency Graph
-
-```
-Phase 6 (权限体系)
-       │
-       ▼
-Phase 7 (注册错误提示) ←─┐
-       │                │
-       ▼                │
-Phase 8 (场景互斥) ─────┘
-       │
-       ▼
-Phase 9 (场景设备联动)
-       │
-       ▼
-Phase 10 (内容数据扩充)
-       │
-       ▼
-Phase 11 (内容推荐增强)
-```
