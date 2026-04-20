@@ -5,7 +5,7 @@
 | Version | Name | Completed | Summary |
 |---------|------|-----------|---------|
 | v1.0 | 初始版本 | 2026-03-?? | 完成基础CRUD功能：用户、设备、场景、内容、推荐、日志管理 |
-| v1.1 | Bug修复与权限增强 | — | 修复注册错误提示、场景互斥、权限分离、内容推荐增强 |
+| v1.1 | Bug修复与权限增强 | 2026-04-19 | 修复注册错误提示、场景互斥、权限分离、内容推荐增强（20/20 requirements） |
 
 ---
 
@@ -25,15 +25,34 @@
 
 ---
 
-## v1.1 (Current)
+## v1.1 Summary
 
-**Goal:** 修复关键Bug并增强用户权限与内容管理
+**Completed Phases:** 06-11 (6 phases, 10 plans)
 
-**Target features:**
-- AUTH-01~AUTH-06: 注册错误提示、权限控制
-- SCENE-01~SCENE-04: 场景互斥、设备联动
-- CONTENT-01~CONTENT-04: 内容数据扩充、分类筛选
-- RECOMMEND-01~RECOMMEND-03: 推荐分类分组
-- PERMISSION-01~PERMISSION-03: 权限体系重构
+**Delivered:**
+- Permission system: SecurityContextUtil + @PreAuthorize for admin/normal user separation
+- AUTH-01/02: Clear error messages for duplicate username/email
+- SCENE-01/04: Scene mutex groups with automatic disable via toggle()
+- SCENE-03: Scene-device state sync on trigger() with syncDevices() helper
+- CONTENT-01/02/03: 24 new content entries (8 movies, 8 music, 8 games)
+- CONTENT-04: Content list type filtering (verified)
+- RECOMMEND-01/02/03: Type filtering, grouped response (GroupedRecommendationVO/Response), configurable weights
+- V1.6 migration: user_preference table adds click_weight/like_weight/dislike_weight
 
-**Status:** Started 2026-04-18
+**Accomplishments:**
+1. Permission system with role-based access control (@PreAuthorize)
+2. Scene mutex mechanism with automatic same-group disable
+3. Scene-device state synchronization on trigger
+4. Content data expansion (24 entries across 3 types)
+5. Type-filtered and grouped recommendation response
+6. Configurable user preference weights per content type
+
+**Key Decisions:**
+- Device sync in trigger(), not toggle() — centralized state management
+- toggle() uses @Transactional for atomic enable+auto-disable
+- getRecommendations() returns GroupedRecommendationResponse with optional type param
+- UserPreference weight fields: clickWeight/likeWeight/dislikeWeight (defaults 5/10/-20)
+
+**Known Deferred:** None
+
+**Tech Debt:** Pre-existing build errors in UserServiceImpl.java (BusinessException constructor mismatch) — not from v1.1 changes
