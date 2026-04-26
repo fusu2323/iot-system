@@ -1,0 +1,44 @@
+# IDE
+.idea/
+*.iml
+
+# Claude
+.claude/
+
+# Planning artifacts
+.planning/
+
+# Build output
+backend/target/
+*/target/
+
+# Frontend & miniprogram (if separate repo)
+frontend/
+miniprogram/
+prototype/
+mermaid_images/
+extract_mermaid.py
+
+# Images
+*.png
+*.jpg
+*.jpeg
+
+# Temporary & reference files
+*.docx
+*.doc
+*.pdf
+~$*
+*翻译*
+*参考*
+*大纲*
+*模板*
+outline.docx
+translation.docx
+todolist.md
+TASKS.md
+开题报告.md
+外文翻译*
+英文翻译*
+毕业论文*
+第四章补.md

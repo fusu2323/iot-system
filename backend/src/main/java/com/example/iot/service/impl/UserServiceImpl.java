@@ -2,6 +2,7 @@ package com.example.iot.service.impl;
 
 import com.baomidou.mybatisplus.core.metadata.IPage;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
+import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
 import com.example.iot.common.exception.BusinessException;
 import com.example.iot.common.result.ResultCode;
 import com.example.iot.dto.LoginRequest;
@@ -34,7 +35,7 @@ import java.util.stream.Collectors;
  * 用户服务实现类
  */
 @Service
-public class UserServiceImpl implements UserService {
+public class UserServiceImpl extends ServiceImpl<UserMapper, User> implements UserService {
 
     private static final Logger log = LoggerFactory.getLogger(UserServiceImpl.class);
 

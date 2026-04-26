@@ -1,16 +1,16 @@
 ---
 gsd_state_version: 1.0
 milestone: v1.2
-milestone_name: 论文初稿撰写
-status: executing
-last_updated: "2026-04-20T00:00:00.000Z"
+milestone_name: 论文初稿撰写 Phases
+status: Defining requirements
+last_updated: "2026-04-22T14:11:46.068Z"
 last_activity: 2026-04-20 — Milestone v1.2 started
 progress:
-  total_phases: 0
-  completed_phases: 0
-  total_plans: 0
-  completed_plans: 0
-  percent: 0
+  total_phases: 13
+  completed_phases: 8
+  total_plans: 19
+  completed_plans: 14
+  percent: 74
 ---
 
 # STATE.md
@@ -31,6 +31,7 @@ See: .planning/PROJECT.md (updated 2026-04-20)
 ## Accumulated Context
 
 **v1.1 Decisions (for reference):**
+
 - 权限校验: @PreAuthorize注解
 - 场景互斥: mutex_group字段, toggle()原子操作
 - 推荐分组: GroupedRecommendationVO/Response结构

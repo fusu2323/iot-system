@@ -1,0 +1,52 @@
+-- =====================================================
+-- 数据库变更日志 (Changelog)
+-- =====================================================
+-- 项目：智能家居娱乐管理系统
+-- 数据库：MySQL 8.x
+-- =====================================================
+--
+-- 变更记录：
+--
+-- [v1.2] 2026-03-12 - Phase 6: 日志与统计模块
+--   - 新增 system_config 表（系统配置）
+--   - 初始化系统配置数据
+--   文件：V1.2__add_log_statistics_tables.sql
+--
+-- [v1.1] 2026-03-12 - Phase 5: 推荐算法与反馈模块
+--   - 新增 recommendation 表（推荐记录）
+--   - 新增 recommendation_feedback 表（推荐反馈）
+--   - 新增 user_preference 初始化数据
+--   文件：V1.1__add_recommendation_tables.sql
+--
+-- [v1.0] 2026-03-12 - Phase 3-4: 场景与内容模1块
+--   - 新增 scene 表（场景）
+--   - 新增 scene_device 表（场景设备关联）
+--   - 新增 content 表（内容）
+--   - 初始化预设场景数据
+--   - 初始化示例内容数据
+--   文件：V1.0__create_scene_content_tables.sql
+--
+-- [v0.9] 2026-03-12 - Phase 3: 设备模块
+--   - 新增 device 表（设备）
+--   - 添加设备表索引优化
+--   文件：V0.9__device_module.sql
+--
+-- [v0.5] 2026-03-12 - Phase 1-2: 项目初始化与用户模块
+--   - 新增 user 表（用户）
+--   - 新增 user_preference 表（用户偏好）
+--   - 新增 operation_log 表（操作日志）
+--   - 初始化管理员账号
+--   文件：init.sql
+--
+-- =====================================================
+
+-- 完整初始化数据库请执行：
+--   mysql -u root iot_system < init.sql
+--
+-- 增量更新数据库请依次执行：
+--   mysql -u root iot_system < migration/V0.9__device_module.sql
+--   mysql -u root iot_system < migration/V1.0__create_scene_content_tables.sql
+--   mysql -u root iot_system < migration/V1.1__add_recommendation_tables.sql
+--   mysql -u root iot_system < migration/V1.2__add_log_statistics_tables.sql
+--
+-- =====================================================
