@@ -24,6 +24,9 @@ public class Content implements Serializable {
     @Schema(description = "内容类型：MOVIE/MUSIC/GAME")
     private String type;
 
+    @Schema(description = "内容分类/流派")
+    private String genre;
+
     @Schema(description = "封面 URL")
     private String cover;
 
@@ -51,6 +54,8 @@ public class Content implements Serializable {
     public void setTitle(String title) { this.title = title; }
     public String getType() { return type; }
     public void setType(String type) { this.type = type; }
+    public String getGenre() { return genre; }
+    public void setGenre(String genre) { this.genre = genre; }
     public String getCover() { return cover; }
     public void setCover(String cover) { this.cover = cover; }
     public String getDescription() { return description; }

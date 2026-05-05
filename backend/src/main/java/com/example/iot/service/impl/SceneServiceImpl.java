@@ -15,6 +15,7 @@ import com.example.iot.mapper.SceneDeviceMapper;
 import com.example.iot.mapper.SceneMapper;
 import com.example.iot.service.OperationLogService;
 import com.example.iot.service.SceneService;
+import com.example.iot.service.StatLogService;
 import com.example.iot.vo.SceneDeviceVO;
 import com.example.iot.vo.SceneVO;
 import org.slf4j.Logger;
@@ -39,13 +40,16 @@ public class SceneServiceImpl implements SceneService {
     private final SceneDeviceMapper sceneDeviceMapper;
     private final DeviceMapper deviceMapper;
     private final OperationLogService operationLogService;
+    private final StatLogService statLogService;
 
     public SceneServiceImpl(SceneMapper sceneMapper, SceneDeviceMapper sceneDeviceMapper,
-                           DeviceMapper deviceMapper, OperationLogService operationLogService) {
+                           DeviceMapper deviceMapper, OperationLogService operationLogService,
+                           StatLogService statLogService) {
         this.sceneMapper = sceneMapper;
         this.sceneDeviceMapper = sceneDeviceMapper;
         this.deviceMapper = deviceMapper;
         this.operationLogService = operationLogService;
+        this.statLogService = statLogService;
     }
 
     @Override
@@ -211,6 +215,11 @@ public class SceneServiceImpl implements SceneService {
 
         // 记录操作日志
         operationLogService.log(scene.getUserId(), "TRIGGER", "SCENE", id, null);
+
+        // STATS-02: 场景trigger()被调用时，写入触发记录
+        if (scene.getUserId() != null) {
+            statLogService.log(scene.getUserId(), "SCENE", id, "TRIGGER");
+        }
     }
 
     @Override
@@ -287,6 +296,10 @@ public class SceneServiceImpl implements SceneService {
                 device.setStatus(deviceTargetStatus);
                 deviceMapper.updateById(device);
                 log.info("device sync: deviceId={}, sceneId={}, targetStatus={}", device.getId(), sceneId, deviceTargetStatus);
+                // STATS-01: 设备status变为1时，写入激活记录
+                if (deviceTargetStatus == 1 && device.getUserId() != null) {
+                    statLogService.log(device.getUserId(), "DEVICE", device.getId(), "ACTIVATE");
+                }
             }
         }
     }

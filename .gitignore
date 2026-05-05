@@ -2,6 +2,10 @@
 .idea/
 *.iml
 
+# Config (contains credentials)
+**/application*.yml
+!**/application*.example.yml
+
 # Claude
 .claude/
 

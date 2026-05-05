@@ -66,6 +66,12 @@ const router = createRouter({
           component: () => import('@/views/LogsView.vue'),
           meta: { title: '生活轨迹' },
         },
+        {
+          path: 'usage',
+          name: 'usage',
+          component: () => import('@/views/UsageView.vue'),
+          meta: { title: '使用统计' },
+        },
       ],
     },
   ],

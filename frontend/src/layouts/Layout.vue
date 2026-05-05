@@ -95,6 +95,7 @@ const menuItems = [
   { path: '/recommend', name: '推荐管理', icon: 'recommend' },
   { path: '/users', name: '家庭成员', icon: 'users' },
   { path: '/logs', name: '生活轨迹', icon: 'logs' },
+  { path: '/usage', name: '使用统计', icon: 'stats' },
 ];
 
 const isActive = (path: string) => route.path === path;
@@ -116,6 +117,7 @@ const currentPageDesc = computed(() => {
     recommend: '个性化内容推荐。',
     users: '管理家庭成员信息。',
     logs: '查看操作日志和生活轨迹。',
+    usage: '查看设备和场景的使用统计。',
   };
   // 添加随机彩蛋描述
   const randomDescs: Record<string, string[]> = {
