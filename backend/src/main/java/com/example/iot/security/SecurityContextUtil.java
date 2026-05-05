@@ -16,17 +16,28 @@ import java.util.Collection;
 @Component
 public class SecurityContextUtil {
 
+    private static SecurityContextUtil instance;
+
     private final UserMapper userMapper;
 
     public SecurityContextUtil(UserMapper userMapper) {
+        instance = this;
         this.userMapper = userMapper;
+    }
+
+    public static Long getCurrentUserId() {
+        return instance.getCurrentUserIdInstance();
+    }
+
+    public static String getCurrentUserRole() {
+        return instance.getCurrentUserRoleInstance();
     }
 
     /**
      * Get current authenticated user's ID from SecurityContext.
      * Uses DB lookup by username since UserDetails principal does not carry userId.
      */
-    public Long getCurrentUserId() {
+    public Long getCurrentUserIdInstance() {
         Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
         if (authentication == null || !authentication.isAuthenticated()) {
             throw new IllegalStateException("No authenticated user found in SecurityContext");
@@ -54,7 +65,7 @@ public class SecurityContextUtil {
      * Get current user's role from SecurityContext authorities.
      * Strips "ROLE_" prefix to return raw role name (ADMIN or USER).
      */
-    public String getCurrentUserRole() {
+    public String getCurrentUserRoleInstance() {
         Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
         if (authentication == null) {
             throw new IllegalStateException("No authenticated user found in SecurityContext");

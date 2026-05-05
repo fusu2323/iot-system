@@ -315,6 +315,14 @@
       <rect x="9" y="12" width="6" height="8" fill="currentColor" opacity="0.3"/>
     </g>
 
+    <!-- 使用统计 -->
+    <g v-if="name === 'stats'">
+      <line x1="6" y1="4" x2="6" y2="20"/>
+      <line x1="12" y1="8" x2="12" y2="20"/>
+      <line x1="18" y1="12" x2="18" y2="20"/>
+      <line x1="3" y1="4" x2="21" y2="4"/>
+    </g>
+
     <!-- 更多图标可扩展 -->
   </svg>
 </template>
