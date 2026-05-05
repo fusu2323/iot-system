@@ -21,6 +21,7 @@ export interface ContentInfo {
   id: number;
   title: string;
   type: string;
+  genre?: string;
   cover?: string;
   description?: string;
   rating?: number;
@@ -72,6 +73,7 @@ export function getContentById(id: number): Promise<ContentInfo> {
 export function createContent(data: {
   title: string;
   type: string;
+  genre?: string;
   cover?: string;
   description?: string;
   rating?: number;
@@ -85,6 +87,10 @@ export function createContent(data: {
  */
 export function updateContent(id: number, data: {
   title?: string;
+  type?: string;
+  genre?: string;
+  cover?: string;
+  description?: string;
   rating?: number;
 }): Promise<ContentInfo> {
   return request.put(`/contents/${id}`, data);

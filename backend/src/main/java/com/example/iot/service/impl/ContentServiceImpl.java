@@ -66,6 +66,7 @@ public class ContentServiceImpl implements ContentService {
         Content content = new Content();
         content.setTitle(dto.getTitle());
         content.setType(dto.getType());
+        content.setGenre(dto.getGenre());
         content.setCover(dto.getCover());
         content.setDescription(dto.getDescription());
         content.setRating(dto.getRating());
@@ -93,6 +94,9 @@ public class ContentServiceImpl implements ContentService {
         }
         if (StringUtils.hasText(dto.getType())) {
             content.setType(dto.getType());
+        }
+        if (dto.getGenre() != null) {
+            content.setGenre(dto.getGenre());
         }
         if (dto.getCover() != null) {
             content.setCover(dto.getCover());
@@ -135,6 +139,7 @@ public class ContentServiceImpl implements ContentService {
         vo.setId(content.getId());
         vo.setTitle(content.getTitle());
         vo.setType(content.getType());
+        vo.setGenre(content.getGenre());
         vo.setCover(content.getCover());
         vo.setDescription(content.getDescription());
         vo.setRating(content.getRating());

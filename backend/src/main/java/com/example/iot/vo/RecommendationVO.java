@@ -24,6 +24,9 @@ public class RecommendationVO {
     @Schema(description = "内容类型", example = "MOVIE")
     private String contentType;
 
+    @Schema(description = "内容分类/流派", example = "科幻")
+    private String contentGenre;
+
     @Schema(description = "内容封面", example = "https://example.com/cover.jpg")
     private String contentCover;
 
@@ -52,6 +55,8 @@ public class RecommendationVO {
     public void setContentTitle(String contentTitle) { this.contentTitle = contentTitle; }
     public String getContentType() { return contentType; }
     public void setContentType(String contentType) { this.contentType = contentType; }
+    public String getContentGenre() { return contentGenre; }
+    public void setContentGenre(String contentGenre) { this.contentGenre = contentGenre; }
     public String getContentCover() { return contentCover; }
     public void setContentCover(String contentCover) { this.contentCover = contentCover; }
     public String getReason() { return reason; }

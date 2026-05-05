@@ -6,13 +6,17 @@
         <div class="table-tools">
           <div class="table-search">
             <Icon name="search" :size="16" />
-            <input type="text" v-model="searchQuery" placeholder="搜索内容..." />
+            <input type="text" v-model="searchQuery" placeholder="搜索内容..." @change="loadContents" />
           </div>
           <select v-model="filterType" class="filter-select" @change="loadContents">
             <option value="">全部类型</option>
             <option value="MOVIE">电影</option>
-            <option value="GAME">电视剧</option>
             <option value="MUSIC">音乐</option>
+            <option value="GAME">游戏</option>
+          </select>
+          <select v-model="filterGenre" class="filter-select" @change="loadContents">
+            <option value="">全部分类</option>
+            <option v-for="genre in availableGenres" :key="genre" :value="genre">{{ genre }}</option>
           </select>
           <button class="btn btn-primary" @click="showAddModal = true">
             <Icon name="add" :size="16" /> 添加内容
@@ -27,8 +31,7 @@
             <th>标题</th>
             <th>类型</th>
             <th>分类</th>
-            <th>时长</th>
-            <th>状态</th>
+            <th>评分</th>
             <th>操作</th>
           </tr>
         </thead>
@@ -36,20 +39,20 @@
           <tr v-for="content in filteredContents" :key="content.id">
             <td>
               <div class="cover-small">
-                <Icon :name="content.cover" :size="24" />
+                <Icon :name="content.coverIcon" :size="24" />
               </div>
             </td>
             <td>
               <div class="content-title">{{ content.title }}</div>
               <div class="content-desc">{{ content.description }}</div>
             </td>
-            <td><span class="tag tag-blue">{{ content.typeText }}</span></td>
-            <td>{{ content.category }}</td>
-            <td>{{ content.duration }}</td>
+            <td><span :class="['tag', content.typeTagClass]">{{ content.typeText }}</span></td>
+            <td><span class="genre-tag">{{ content.genre || '-' }}</span></td>
             <td>
-              <span :class="['tag', content.status ? 'tag-green' : 'tag-red']">
-                {{ content.status ? '已发布' : '未发布' }}
-              </span>
+              <div class="rating">
+                <Icon name="star" :size="14" />
+                <span>{{ content.rating?.toFixed(1) || '-' }}</span>
+              </div>
             </td>
             <td>
               <span class="action-link" @click="editContent(content)">编辑</span>
@@ -83,43 +86,35 @@
             <label class="form-label">标题</label>
             <input v-model="formData.title" type="text" class="form-input" required />
           </div>
-          <div class="form-group">
-            <label class="form-label">描述</label>
-            <input v-model="formData.description" type="text" class="form-input" />
-          </div>
           <div class="form-row">
             <div class="form-group">
               <label class="form-label">类型</label>
-              <select v-model="formData.type" class="form-select">
-                <option value="电影">电影</option>
-                <option value="电视剧">电视剧</option>
-                <option value="音乐">音乐</option>
-                <option value="课程">课程</option>
+              <select v-model="formData.type" class="form-select" @change="updateGenreOptions">
+                <option value="MOVIE">电影</option>
+                <option value="MUSIC">音乐</option>
+                <option value="GAME">游戏</option>
               </select>
             </div>
             <div class="form-group">
               <label class="form-label">分类</label>
-              <select v-model="formData.category" class="form-select">
-                <option value="科幻">科幻</option>
-                <option value="动作">动作</option>
-                <option value="剧情">剧情</option>
-                <option value="喜剧">喜剧</option>
-                <option value="音乐">音乐</option>
-                <option value="教育">教育</option>
+              <select v-model="formData.genre" class="form-select">
+                <option value="">请选择分类</option>
+                <option v-for="genre in currentGenreOptions" :key="genre" :value="genre">{{ genre }}</option>
               </select>
             </div>
           </div>
+          <div class="form-group">
+            <label class="form-label">描述</label>
+            <textarea v-model="formData.description" class="form-textarea" rows="3"></textarea>
+          </div>
           <div class="form-row">
             <div class="form-group">
-              <label class="form-label">时长</label>
-              <input v-model="formData.duration" type="text" class="form-input" />
+              <label class="form-label">评分</label>
+              <input v-model.number="formData.rating" type="number" step="0.1" min="0" max="5" class="form-input" />
             </div>
             <div class="form-group">
-              <label class="form-label">状态</label>
-              <select v-model="formData.status" class="form-select">
-                <option :value="true">已发布</option>
-                <option :value="false">未发布</option>
-              </select>
+              <label class="form-label">封面</label>
+              <input v-model="formData.cover" type="text" class="form-input" placeholder="封面URL" />
             </div>
           </div>
           <div class="modal-actions">
@@ -152,18 +147,16 @@ import {
   type ContentInfo,
 } from '@/api/content';
 
-// 内容类型映射
 const typeTextMap: Record<string, string> = {
   MOVIE: '电影',
   MUSIC: '音乐',
   GAME: '游戏',
 };
 
-const typeValueMap: Record<string, string> = {
-  '电影': 'MOVIE',
-  '电视剧': 'GAME',
-  '音乐': 'MUSIC',
-  '课程': 'GAME',
+const typeTagClassMap: Record<string, string> = {
+  MOVIE: 'tag-purple',
+  MUSIC: 'tag-pink',
+  GAME: 'tag-cyan',
 };
 
 const coverIconMap: Record<string, string> = {
@@ -172,8 +165,15 @@ const coverIconMap: Record<string, string> = {
   GAME: 'content-game',
 };
 
+const genreOptions: Record<string, string[]> = {
+  MOVIE: ['科幻', '动作', '剧情', '喜剧', '动画', '恐怖', '爱情'],
+  MUSIC: ['流行', '摇滚', '民谣', '电子', '古典', '爵士'],
+  GAME: ['RPG', '动作', 'MOBA', '射击', '沙盒', '模拟'],
+};
+
 const searchQuery = ref('');
 const filterType = ref('');
+const filterGenre = ref('');
 const currentPage = ref(1);
 const pageSize = ref(10);
 const showAddModal = ref(false);
@@ -183,16 +183,49 @@ const loading = ref(false);
 const formData = ref<any>({
   id: null,
   title: '',
-  description: '',
   type: 'MOVIE',
-  rating: 4.5,
+  genre: '',
+  description: '',
+  rating: 4.0,
   cover: '',
 });
 
 const contents = ref<ContentInfo[]>([]);
 const total = ref(0);
 
-// 加载内容列表
+const availableGenres = computed(() => {
+  const genres = new Set<string>();
+  contents.value.forEach(c => {
+    if (c.genre) {
+      genres.add(c.genre);
+    }
+  });
+  return Array.from(genres);
+});
+
+const currentGenreOptions = computed(() => {
+  return genreOptions[formData.value.type] || [];
+});
+
+const filteredContents = computed(() => {
+  let filtered = contents.value;
+  
+  if (filterGenre.value) {
+    filtered = filtered.filter(c => c.genre === filterGenre.value);
+  }
+  
+  return filtered.map((content) => ({
+    ...content,
+    typeText: typeTextMap[content.type] || content.type,
+    typeTagClass: typeTagClassMap[content.type] || 'tag-blue',
+    coverIcon: content.cover ? undefined : (coverIconMap[content.type] || 'content-movie'),
+  }));
+});
+
+const totalPages = computed(() => Math.ceil(total.value / pageSize.value));
+
+const toast = ref({ show: false, type: 'success', message: '' });
+
 const loadContents = async () => {
   try {
     loading.value = true;
@@ -200,7 +233,7 @@ const loadContents = async () => {
       page: currentPage.value,
       size: pageSize.value,
       keyword: searchQuery.value,
-      type: filterType.value ? typeValueMap[filterType.value] : undefined,
+      type: filterType.value || undefined,
     });
     contents.value = result.records;
     total.value = result.total;
@@ -211,30 +244,20 @@ const loadContents = async () => {
   }
 };
 
-const filteredContents = computed(() => {
-  return contents.value.map((content) => ({
-    ...content,
-    typeText: typeTextMap[content.type] || content.type,
-    cover: content.cover || coverIconMap[content.type] || 'content-movie',
-    category: content.type === 'MOVIE' ? '科幻' : content.type === 'MUSIC' ? '音乐' : '其他',
-    duration: content.rating ? `${content.rating}分` : '-',
-    status: content.rating !== undefined && content.rating > 0,
-  }));
-});
-
-const totalPages = computed(() => Math.ceil(total.value / pageSize.value));
-
-const toast = ref({ show: false, type: 'success', message: '' });
+const updateGenreOptions = () => {
+  formData.value.genre = '';
+};
 
 const editContent = (content: any) => {
   isEditing.value = true;
   formData.value = {
     id: content.id,
     title: content.title,
-    description: content.description,
     type: content.type,
-    rating: content.rating,
-    cover: content.cover,
+    genre: content.genre || '',
+    description: content.description || '',
+    rating: content.rating || 4.0,
+    cover: content.cover || '',
   };
   showAddModal.value = true;
 };
@@ -259,9 +282,10 @@ const handleSubmit = async () => {
     const submitData = {
       title: formData.value.title,
       type: formData.value.type,
-      description: formData.value.description,
+      genre: formData.value.genre || undefined,
+      description: formData.value.description || undefined,
       rating: formData.value.rating,
-      cover: formData.value.cover,
+      cover: formData.value.cover || undefined,
     };
 
     if (isEditing.value && formData.value.id) {
@@ -315,6 +339,8 @@ onMounted(() => {
   justify-content: space-between;
   align-items: center;
   margin-bottom: 20px;
+  flex-wrap: wrap;
+  gap: 12px;
 }
 
 .table-title {
@@ -325,6 +351,8 @@ onMounted(() => {
 .table-tools {
   display: flex;
   gap: 12px;
+  align-items: center;
+  flex-wrap: wrap;
 }
 
 .table-search {
@@ -387,12 +415,6 @@ onMounted(() => {
   justify-content: center;
   color: white;
   box-shadow: 0 2px 8px rgba(30, 58, 95, 0.2);
-  transition: transform 0.2s ease, box-shadow 0.2s ease;
-}
-
-tr:hover .cover-small {
-  transform: scale(1.05);
-  box-shadow: 0 4px 12px rgba(30, 58, 95, 0.3);
 }
 
 .content-title {
@@ -405,6 +427,14 @@ tr:hover .cover-small {
   color: var(--text-muted);
 }
 
+.rating {
+  display: flex;
+  align-items: center;
+  gap: 4px;
+  color: #f5a623;
+  font-weight: 500;
+}
+
 .tag {
   display: inline-block;
   padding: 4px 12px;
@@ -413,17 +443,28 @@ tr:hover .cover-small {
   font-weight: 500;
 }
 
-.tag-blue {
-  background: var(--info-bg);
-  color: var(--info-text);
+.tag-purple {
+  background: rgba(155, 89, 182, 0.15);
+  color: #9b59b6;
 }
-.tag-green {
-  background: var(--success-bg);
-  color: var(--success-text);
+
+.tag-pink {
+  background: rgba(233, 30, 99, 0.15);
+  color: #e91e63;
 }
-.tag-red {
-  background: var(--error-bg);
-  color: var(--error-text);
+
+.tag-cyan {
+  background: rgba(0, 188, 212, 0.15);
+  color: #00bcd4;
+}
+
+.genre-tag {
+  display: inline-block;
+  padding: 3px 10px;
+  background: var(--bg-secondary);
+  border-radius: 8px;
+  font-size: 12px;
+  color: var(--text-secondary);
 }
 
 .action-link {
@@ -447,7 +488,19 @@ tr:hover .cover-small {
   gap: 16px;
 }
 
-/* Pagination */
+.form-textarea {
+  width: 100%;
+  padding: 10px 14px;
+  background: var(--bg-secondary);
+  border: 1px solid var(--border-color);
+  border-radius: 10px;
+  color: var(--text-primary);
+  font-size: 14px;
+  outline: none;
+  resize: vertical;
+  font-family: inherit;
+}
+
 .pagination {
   display: flex;
   justify-content: flex-end;
@@ -466,7 +519,7 @@ tr:hover .cover-small {
   transition: all 0.2s;
 }
 
-.pagination-btn:hover {
+.pagination-btn:hover:not(:disabled) {
   background: var(--bg-hover);
 }
 
@@ -481,7 +534,6 @@ tr:hover .cover-small {
   cursor: not-allowed;
 }
 
-/* Modal */
 .modal-overlay {
   position: fixed;
   top: 0;
@@ -502,6 +554,8 @@ tr:hover .cover-small {
   width: 560px;
   max-width: 90%;
   box-shadow: var(--shadow-lg);
+  max-height: 90vh;
+  overflow-y: auto;
 }
 
 .modal-title {
@@ -533,7 +587,8 @@ tr:hover .cover-small {
 }
 
 .form-input:focus,
-.form-select:focus {
+.form-select:focus,
+.form-textarea:focus {
   border-color: var(--primary-color);
 }
 
@@ -576,7 +631,6 @@ tr:hover .cover-small {
   background: var(--bg-hover);
 }
 
-/* Toast */
 .toast {
   position: fixed;
   bottom: 32px;

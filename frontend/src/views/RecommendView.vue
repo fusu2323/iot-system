@@ -12,11 +12,11 @@
           <div class="preference-options">
             <label
               v-for="type in contentTypes"
-              :key="type"
-              :class="['option-tag', { active: preferences.types.includes(type) }]"
-              @click="togglePreference('types', type)"
+              :key="type.value"
+              :class="['option-tag', { active: preferences.types.includes(type.value) }]"
+              @click="togglePreference('types', type.value)"
             >
-              {{ type }}
+              {{ type.label }}
             </label>
           </div>
         </div>
@@ -24,7 +24,7 @@
           <label class="preference-label">分类偏好</label>
           <div class="preference-options">
             <label
-              v-for="category in categories"
+              v-for="category in allCategories"
               :key="category"
               :class="['option-tag', { active: preferences.categories.includes(category) }]"
               @click="togglePreference('categories', category)"
@@ -36,28 +36,47 @@
       </div>
     </div>
 
-    <!-- Recommend List -->
-    <div class="recommend-grid">
-      <div class="recommend-card" v-for="item in recommendations" :key="item.id">
-        <div class="recommend-cover">
-          <Icon :name="item.cover" :size="48" />
+    <!-- Recommend List - Grouped by Type -->
+    <div class="recommend-sections">
+      <div v-for="(items, type) in groupedRecommendations" :key="type" class="recommend-section">
+        <div class="section-header">
+          <h4 class="section-title">
+            <Icon :name="typeIconMap[type]" :size="20" />
+            {{ typeLabelMap[type] }}推荐
+          </h4>
+          <span class="section-count">{{ items.length }} 个内容</span>
         </div>
-        <div class="recommend-match">{{ item.matchRate }}% 匹配</div>
-        <div class="recommend-info">
-          <div class="recommend-title">{{ item.title }}</div>
-          <span class="recommend-type">{{ item.type }}</span>
-          <div class="recommend-desc">{{ item.description }}</div>
-          <div class="recommend-actions">
-            <div class="recommend-rate">
-              <span @click="rateItem(item, 'like')">
-                <Icon name="like" :size="18" />
-              </span>
-              <span @click="rateItem(item, 'dislike')">
-                <Icon name="dislike" :size="18" />
-              </span>
+        <div class="recommend-grid">
+          <div class="recommend-card" v-for="item in items" :key="item.id">
+            <div class="recommend-cover" :class="typeCoverClassMap[type]">
+              <Icon :name="typeIconMap[type]" :size="48" />
             </div>
-            <span class="recommend-play" @click="playItem(item)">播放</span>
+            <div class="recommend-match">{{ item.matchRate }}% 匹配</div>
+            <div class="recommend-info">
+              <div class="recommend-title">{{ item.title }}</div>
+              <div class="recommend-meta">
+                <span v-if="item.genre" class="recommend-genre">{{ item.genre }}</span>
+                <span class="recommend-type">{{ typeLabelMap[item.type] }}</span>
+              </div>
+              <div class="recommend-desc">{{ item.description }}</div>
+              <div class="recommend-reason">{{ item.reason }}</div>
+              <div class="recommend-actions">
+                <div class="recommend-rate">
+                  <span @click="rateItem(item, 'like')" :class="{ active: item.isLiked }">
+                    <Icon name="like" :size="18" />
+                  </span>
+                  <span @click="rateItem(item, 'dislike')" :class="{ active: item.isDisliked }">
+                    <Icon name="dislike" :size="18" />
+                  </span>
+                </div>
+                <span class="recommend-play" @click="playItem(item)">播放</span>
+              </div>
+            </div>
           </div>
+        </div>
+        <div v-if="items.length === 0" class="empty-state">
+          <Icon name="empty" :size="48" />
+          <p>暂无该类型的推荐内容</p>
         </div>
       </div>
     </div>
@@ -70,7 +89,7 @@
 </template>
 
 <script setup lang="ts">
-import { ref, onMounted } from 'vue';
+import { ref, computed, onMounted } from 'vue';
 import Icon from '@/components/Icon.vue';
 import { getRecommendations, recordClick, recordLike, recordDislike } from '@/api/recommend';
 import { getPreferences, setPreference, type UserPreference } from '@/api/preferences';
@@ -78,98 +97,118 @@ import { useUserStore } from '@/stores/user';
 
 const userStore = useUserStore();
 
-// 内容类型与图标映射
-const contentIconMap: Record<string, string> = {
-  MOVIE: 'content-movie',
-  GAME: 'content-drama',
-  MUSIC: 'content-music',
-};
-
-// 类型映射
-const typeTextMap: Record<string, string> = {
+const typeLabelMap: Record<string, string> = {
   MOVIE: '电影',
-  GAME: '电视剧',
   MUSIC: '音乐',
+  GAME: '游戏',
 };
 
-const typeValueMap: Record<string, string> = {
-  '电影': 'MOVIE',
-  '电视剧': 'GAME',
-  '音乐': 'MUSIC',
-  '课程': 'GAME',
+const typeIconMap: Record<string, string> = {
+  MOVIE: 'content-movie',
+  MUSIC: 'content-music',
+  GAME: 'content-game',
 };
 
-const categoryValueMap: Record<string, string> = {
-  '科幻': '科幻',
-  '动作': '动作',
-  '剧情': '剧情',
-  '喜剧': '喜剧',
-  '音乐': '音乐',
-  '教育': '教育',
+const typeCoverClassMap: Record<string, string> = {
+  MOVIE: 'cover-movie',
+  MUSIC: 'cover-music',
+  GAME: 'cover-game',
 };
+
+const contentTypes = [
+  { value: 'MOVIE', label: '电影' },
+  { value: 'MUSIC', label: '音乐' },
+  { value: 'GAME', label: '游戏' },
+];
+
+const allCategories = ['科幻', '动作', '剧情', '喜剧', '动画', '恐怖', '爱情', '流行', '摇滚', '民谣', '电子', '古典', '爵士', 'RPG', 'MOBA', '射击', '沙盒', '模拟'];
 
 const preferences = ref({
   types: [] as string[],
   categories: [] as string[],
 });
 
-const contentTypes = ['电影', '电视剧', '音乐', '课程'];
-const categories = ['科幻', '动作', '剧情', '喜剧', '音乐', '教育'];
-
 const recommendations = ref<any[]>([]);
+const loading = ref(false);
+const groupedData = ref<Record<string, any[]>>({
+  MOVIE: [],
+  MUSIC: [],
+  GAME: [],
+});
+
+const groupedRecommendations = computed(() => {
+  return groupedData.value;
+});
 
 const toast = ref({ show: false, type: 'success', message: '' });
 
-// 加载偏好设置
 const loadPreferences = async () => {
   try {
     const currentUserId = userStore.userInfo?.id || 1;
     const result = await getPreferences(currentUserId);
     if (result && result.length > 0) {
-      // 从偏好中提取类型和分类
       const types: string[] = [];
       const categories: string[] = [];
 
       result.forEach((pref: UserPreference) => {
-        const typeText = typeTextMap[pref.contentType];
-        if (typeText) {
-          types.push(typeText);
-        } else if (!categories.includes(pref.contentType)) {
-          // 假设不是预定义类型，则是分类
-          categories.push(pref.contentType);
+        if (['MOVIE', 'MUSIC', 'GAME'].includes(pref.contentType || '')) {
+          types.push(pref.contentType!);
+        } else if (pref.contentType) {
+          if (!categories.includes(pref.contentType)) {
+            categories.push(pref.contentType);
+          }
         }
       });
 
-      preferences.value.types = types.length > 0 ? types : ['电影', '音乐'];
-      preferences.value.categories = categories.length > 0 ? categories : ['科幻', '音乐'];
+      preferences.value.types = types.length > 0 ? types : ['MOVIE', 'MUSIC'];
+      preferences.value.categories = categories.length > 0 ? categories : ['科幻', '流行'];
     } else {
-      // 默认偏好
-      preferences.value.types = ['电影', '音乐'];
-      preferences.value.categories = ['科幻', '音乐'];
+      preferences.value.types = ['MOVIE', 'MUSIC'];
+      preferences.value.categories = ['科幻', '流行'];
     }
   } catch (error) {
     console.error('加载偏好失败:', error);
-    preferences.value.types = ['电影', '音乐'];
-    preferences.value.categories = ['科幻', '音乐'];
+    preferences.value.types = ['MOVIE', 'MUSIC'];
+    preferences.value.categories = ['科幻', '流行'];
   }
 };
 
-// 加载推荐列表
 const loadRecommendations = async () => {
   try {
+    loading.value = true;
     const currentUserId = userStore.userInfo?.id || 1;
-    const result = await getRecommendations({ userId: currentUserId, page: 1, size: 8 });
-    recommendations.value = result.records.map((item: any) => ({
-      id: item.id,
-      cover: contentIconMap[item.contentType] || 'content-movie',
-      title: item.contentTitle,
-      type: typeTextMap[item.contentType] || item.contentType,
-      description: item.reason || '根据您的偏好推荐',
-      matchRate: item.matchScore || Math.floor(Math.random() * 20 + 75),
-      contentId: item.contentId,
-    }));
+    const result: any = await getRecommendations({ userId: currentUserId, page: 1, size: 20 });
+    
+    // 处理分组响应格式
+    groupedData.value = {
+      MOVIE: [],
+      MUSIC: [],
+      GAME: [],
+    };
+    
+    if (result.groups) {
+      Object.entries(result.groups).forEach(([type, group]: [string, any]) => {
+        if (group.items) {
+          groupedData.value[type] = group.items.map((item: any) => ({
+            id: item.id,
+            contentId: item.contentId,
+            title: item.contentTitle,
+            type: item.contentType,
+            genre: item.contentGenre,
+            description: item.description || '精彩内容',
+            reason: item.reason || '猜你喜欢',
+            matchRate: item.score || Math.floor(Math.random() * 20 + 70),
+            isClicked: item.isClicked || 0,
+            isLiked: item.isLiked || 0,
+            isDisliked: item.isDisliked || 0,
+          }));
+        }
+      });
+    }
   } catch (error) {
     console.error('加载推荐失败:', error);
+  } finally {
+    loading.value = false;
   }
 };
 
@@ -186,19 +225,17 @@ const savePreferences = async () => {
   try {
     const currentUserId = userStore.userInfo?.id || 1;
 
-    // 保存类型偏好
     for (const type of preferences.value.types) {
       await setPreference(currentUserId, {
-        contentType: typeValueMap[type] || type,
-        preferenceScore: 1.0,
+        contentType: type,
+        preferenceScore: 10,
       });
     }
 
-    // 保存分类偏好
     for (const category of preferences.value.categories) {
       await setPreference(currentUserId, {
         contentType: category,
-        preferenceScore: 1.0,
+        preferenceScore: 8,
       });
     }
 
@@ -217,12 +254,15 @@ const rateItem = async (item: any, type: string) => {
 
     if (type === 'like') {
       await recordLike(currentUserId, contentId);
+      item.isLiked = 1;
+      item.isDisliked = 0;
       showToast('success', '已标记喜欢');
     } else {
       await recordDislike(currentUserId, contentId);
+      item.isLiked = 0;
+      item.isDisliked = 1;
       showToast('success', '已标记不喜欢');
     }
-    await loadRecommendations();
   } catch (error: any) {
     console.error('评分失败:', error);
     showToast('error', error.response?.data?.message || '评分失败');
@@ -234,6 +274,7 @@ const playItem = async (item: any) => {
     const currentUserId = userStore.userInfo?.id || 1;
     const contentId = item.contentId || item.id;
     await recordClick(currentUserId, contentId);
+    item.isClicked = 1;
     showToast('success', `正在播放 ${item.title}`);
   } catch (error: any) {
     console.error('记录播放失败:', error);
@@ -324,14 +365,51 @@ onMounted(() => {
   border-color: var(--primary-color);
 }
 
+.recommend-sections {
+  display: flex;
+  flex-direction: column;
+  gap: 32px;
+}
+
+.recommend-section {
+  background: var(--bg-card);
+  border-radius: 16px;
+  padding: 24px;
+  box-shadow: var(--shadow-sm);
+}
+
+.section-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 20px;
+}
+
+.section-title {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  font-size: 18px;
+  color: var(--text-primary);
+  margin: 0;
+}
+
+.section-count {
+  font-size: 13px;
+  color: var(--text-muted);
+  background: var(--bg-secondary);
+  padding: 4px 12px;
+  border-radius: 12px;
+}
+
 .recommend-grid {
   display: grid;
-  grid-template-columns: repeat(auto-fill, minmax(250px, 1fr));
+  grid-template-columns: repeat(auto-fill, minmax(260px, 1fr));
   gap: 20px;
 }
 
 .recommend-card {
-  background: var(--bg-card);
+  background: var(--bg-secondary);
   border-radius: 14px;
   overflow: hidden;
   box-shadow: var(--shadow-sm);
@@ -346,11 +424,22 @@ onMounted(() => {
 
 .recommend-cover {
   height: 160px;
-  background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
   display: flex;
   align-items: center;
   justify-content: center;
   color: white;
+}
+
+.cover-movie {
+  background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+}
+
+.cover-music {
+  background: linear-gradient(135deg, #f093fb 0%, #f5576c 100%);
+}
+
+.cover-game {
+  background: linear-gradient(135deg, #4facfe 0%, #00f2fe 100%);
 }
 
 .recommend-match {
@@ -370,23 +459,51 @@ onMounted(() => {
 }
 
 .recommend-title {
-  font-weight: 500;
+  font-weight: 600;
+  font-size: 15px;
   margin-bottom: 6px;
+  color: var(--text-primary);
+}
+
+.recommend-meta {
+  display: flex;
+  gap: 8px;
+  margin-bottom: 8px;
+}
+
+.recommend-genre {
+  display: inline-block;
+  padding: 2px 8px;
+  background: rgba(90, 93, 67, 0.15);
+  color: var(--primary-color);
+  border-radius: 6px;
+  font-size: 11px;
+  font-weight: 500;
 }
 
 .recommend-type {
   display: inline-block;
   padding: 2px 8px;
   background: var(--bg-secondary);
+  color: var(--text-muted);
   border-radius: 6px;
   font-size: 11px;
-  color: var(--text-muted);
-  margin-bottom: 8px;
 }
 
 .recommend-desc {
   font-size: 13px;
   color: var(--text-muted);
+  margin-bottom: 8px;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  display: -webkit-box;
+  -webkit-line-clamp: 2;
+  -webkit-box-orient: vertical;
+}
+
+.recommend-reason {
+  font-size: 12px;
+  color: var(--primary-color);
   margin-bottom: 12px;
 }
 
@@ -398,14 +515,22 @@ onMounted(() => {
 
 .recommend-rate {
   display: flex;
-  gap: 8px;
+  gap: 12px;
   color: var(--text-muted);
   cursor: pointer;
   font-size: 18px;
 }
 
+.recommend-rate span {
+  transition: all 0.2s;
+}
+
 .recommend-rate span:hover {
   transform: scale(1.1);
+}
+
+.recommend-rate span.active {
+  color: var(--primary-color);
 }
 
 .recommend-play {
@@ -413,6 +538,20 @@ onMounted(() => {
   font-size: 13px;
   cursor: pointer;
   font-weight: 500;
+}
+
+.empty-state {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  padding: 48px;
+  color: var(--text-muted);
+}
+
+.empty-state p {
+  margin-top: 12px;
+  font-size: 14px;
 }
 
 .btn {
@@ -442,7 +581,6 @@ onMounted(() => {
   font-size: 13px;
 }
 
-/* Toast */
 .toast {
   position: fixed;
   bottom: 32px;

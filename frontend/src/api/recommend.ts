@@ -14,6 +14,7 @@ export interface RecommendationInfo {
   contentId: number;
   contentTitle: string;
   contentType: string;
+  contentGenre?: string;
   contentCover: string;
   reason: string;
   score: number;
@@ -43,10 +44,22 @@ export interface PageResult<T> {
 }
 
 /**
+ * 分组推荐响应
+ */
+export interface GroupedRecommendationInfo {
+  groups: Record<string, {
+    type: string;
+    items: RecommendationInfo[];
+    total: number;
+  }>;
+  total: number;
+}
+
+/**
  * 获取推荐列表
  * GET /api/recommendations?userId={userId}
  */
-export function getRecommendations(params: RecommendationQueryParams): Promise<PageResult<RecommendationInfo>> {
+export function getRecommendations(params: RecommendationQueryParams): Promise<GroupedRecommendationInfo> {
   return request.get('/recommendations', { params });
 }
 

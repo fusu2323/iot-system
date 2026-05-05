@@ -59,7 +59,11 @@ public class RecommendationServiceImpl implements RecommendationService {
         Map<String, Integer> preferenceMap = new HashMap<>();
         if (preferences != null && !preferences.isEmpty()) {
             preferenceMap = preferences.stream()
-                .collect(Collectors.toMap(UserPreference::getContentType, UserPreference::getPreferenceScore));
+                .collect(Collectors.toMap(
+                    UserPreference::getContentType,
+                    UserPreference::getPreferenceScore,
+                    (existing, replacement) -> existing // 遇到重复 key 时保留第一个
+                ));
         }
 
         // 2. 获取用户已反馈的内容 ID 列表（避免重复推荐）
@@ -293,18 +297,24 @@ public class RecommendationServiceImpl implements RecommendationService {
     private int calculateRecommendationScore(Content content, Map<String, Integer> preferenceMap, Long userId) {
         int score = 50; // 基础分数
 
-        // 1. 基于用户偏好的分数
+        // 1. 基于用户类型偏好的分数
         if (preferenceMap.containsKey(content.getType())) {
             int preferenceScore = preferenceMap.get(content.getType());
-            score += preferenceScore / 2; // 偏好分数贡献 50%
+            score += preferenceScore / 2; // 类型偏好分数贡献 50%
         }
 
-        // 2. 基于内容评分的分数
+        // 2. 基于内容分类（genre）的偏好分数
+        if (content.getGenre() != null && preferenceMap.containsKey(content.getGenre())) {
+            int genrePreferenceScore = preferenceMap.get(content.getGenre());
+            score += genrePreferenceScore / 3; // 分类偏好分数贡献
+        }
+
+        // 3. 基于内容评分的分数
         if (content.getRating() != null) {
             score += (int) (content.getRating().doubleValue() * 10); // 评分贡献
         }
 
-        // 3. 基于用户历史行为的调整
+        // 4. 基于用户历史行为的调整
         score += getUserBehaviorBonus(userId, content.getType());
 
         return Math.min(100, Math.max(0, score));
@@ -460,6 +470,7 @@ public class RecommendationServiceImpl implements RecommendationService {
         vo.setUserId(userId);
         vo.setContentTitle(content.getTitle());
         vo.setContentType(content.getType());
+        vo.setContentGenre(content.getGenre());
         vo.setContentCover(content.getCover());
         vo.setReason(generateReason(content, score));
         vo.setScore(score);
@@ -473,15 +484,24 @@ public class RecommendationServiceImpl implements RecommendationService {
      * 生成推荐原因
      */
     private String generateReason(Content content, int score) {
-        if (score >= 80) {
-            return "高度匹配您的偏好";
-        } else if (score >= 70) {
-            return "根据您的观看历史推荐";
-        } else if (score >= 60) {
-            return "热门内容推荐";
-        } else {
-            return "猜你喜欢";
+        StringBuilder reason = new StringBuilder();
+        
+        if (content.getGenre() != null) {
+            reason.append(content.getGenre());
+            reason.append(" · ");
         }
+        
+        if (score >= 85) {
+            reason.append("强烈推荐");
+        } else if (score >= 75) {
+            reason.append("精选推荐");
+        } else if (score >= 65) {
+            reason.append("热门推荐");
+        } else {
+            reason.append("猜你喜欢");
+        }
+        
+        return reason.toString();
     }
 
     /**

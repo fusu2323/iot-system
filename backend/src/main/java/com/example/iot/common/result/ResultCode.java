@@ -47,7 +47,9 @@ public enum ResultCode {
     LOG_NOT_FOUND(6001, "日志不存在"),
 
     // 统计相关错误码 (7000-7999)
-    STATS_NOT_FOUND(7001, "统计数据不存在");
+    STATS_NOT_FOUND(7001, "统计数据不存在"),
+
+    TASK_NOT_FOUND(8001,"任务未发现");
 
     private final Integer code;
     private final String message;
