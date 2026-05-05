@@ -1,10 +1,13 @@
 package com.example.iot.controller;
 
 import com.baomidou.mybatisplus.core.metadata.IPage;
+import com.example.iot.common.exception.BusinessException;
 import com.example.iot.common.result.Result;
+import com.example.iot.common.result.ResultCode;
 import com.example.iot.dto.DeviceCreateDTO;
 import com.example.iot.dto.DeviceStatusUpdateDTO;
 import com.example.iot.dto.DeviceUpdateDTO;
+import com.example.iot.security.SecurityContextUtil;
 import com.example.iot.service.DeviceService;
 import com.example.iot.vo.DeviceStatisticsVO;
 import com.example.iot.vo.DeviceVO;
@@ -26,9 +29,11 @@ import java.util.List;
 public class DeviceController {
 
     private final DeviceService deviceService;
+    private final SecurityContextUtil securityContextUtil;
 
-    public DeviceController(DeviceService deviceService) {
+    public DeviceController(DeviceService deviceService, SecurityContextUtil securityContextUtil) {
         this.deviceService = deviceService;
+        this.securityContextUtil = securityContextUtil;
     }
 
     /**
@@ -54,7 +59,13 @@ public class DeviceController {
         @Parameter(description = "用户 ID", example = "1")
         @RequestParam(required = false) Long userId
     ) {
-        IPage<DeviceVO> devices = deviceService.list(page, size, keyword, type, room, status, isOnline, userId);
+        Long currentUserId = securityContextUtil.getCurrentUserId();
+        String currentRole = securityContextUtil.getCurrentUserRole();
+        Long effectiveUserId = userId;
+        if (!"ADMIN".equals(currentRole)) {
+            effectiveUserId = currentUserId;
+        }
+        IPage<DeviceVO> devices = deviceService.list(page, size, keyword, type, room, status, isOnline, effectiveUserId);
         return Result.success(devices);
     }
 
@@ -68,6 +79,11 @@ public class DeviceController {
         @PathVariable Long id
     ) {
         DeviceVO device = deviceService.getById(id);
+        Long currentUserId = securityContextUtil.getCurrentUserId();
+        String currentRole = securityContextUtil.getCurrentUserRole();
+        if (!"ADMIN".equals(currentRole) && (device.getUserId() == null || !currentUserId.equals(device.getUserId()))) {
+            throw new BusinessException(ResultCode.FORBIDDEN.getCode(), "无权限查看其他用户设备");
+        }
         return Result.success(device);
     }
 
@@ -79,9 +95,17 @@ public class DeviceController {
     public Result<Long> create(
         @RequestBody @Valid @Validated DeviceCreateDTO dto,
         @Parameter(description = "用户 ID", example = "1")
-        @RequestParam Long userId
+        @RequestParam(required = false) Long userId
     ) {
-        Long deviceId = deviceService.create(dto, userId);
+        Long currentUserId = securityContextUtil.getCurrentUserId();
+        String currentRole = securityContextUtil.getCurrentUserRole();
+        Long effectiveUserId = userId;
+        if (!"ADMIN".equals(currentRole)) {
+            effectiveUserId = currentUserId;
+        } else if (effectiveUserId == null) {
+            effectiveUserId = currentUserId;
+        }
+        Long deviceId = deviceService.create(dto, effectiveUserId);
         return Result.success("创建成功", deviceId);
     }
 
@@ -95,6 +119,12 @@ public class DeviceController {
         @PathVariable Long id,
         @RequestBody @Valid @Validated DeviceUpdateDTO dto
     ) {
+        DeviceVO existing = deviceService.getById(id);
+        Long currentUserId = securityContextUtil.getCurrentUserId();
+        String currentRole = securityContextUtil.getCurrentUserRole();
+        if (!"ADMIN".equals(currentRole) && (existing.getUserId() == null || !currentUserId.equals(existing.getUserId()))) {
+            throw new BusinessException(ResultCode.FORBIDDEN.getCode(), "无权限修改其他用户设备");
+        }
         DeviceVO device = deviceService.update(id, dto);
         return Result.success("更新成功", device);
     }
@@ -108,6 +138,12 @@ public class DeviceController {
         @Parameter(description = "设备 ID", example = "1")
         @PathVariable Long id
     ) {
+        DeviceVO existing = deviceService.getById(id);
+        Long currentUserId = securityContextUtil.getCurrentUserId();
+        String currentRole = securityContextUtil.getCurrentUserRole();
+        if (!"ADMIN".equals(currentRole) && (existing.getUserId() == null || !currentUserId.equals(existing.getUserId()))) {
+            throw new BusinessException(ResultCode.FORBIDDEN.getCode(), "无权限删除其他用户设备");
+        }
         deviceService.delete(id);
         return Result.success("删除成功", null);
     }
@@ -122,6 +158,12 @@ public class DeviceController {
         @PathVariable Long id,
         @RequestBody @Valid @Validated DeviceStatusUpdateDTO dto
     ) {
+        DeviceVO existing = deviceService.getById(id);
+        Long currentUserId = securityContextUtil.getCurrentUserId();
+        String currentRole = securityContextUtil.getCurrentUserRole();
+        if (!"ADMIN".equals(currentRole) && (existing.getUserId() == null || !currentUserId.equals(existing.getUserId()))) {
+            throw new BusinessException(ResultCode.FORBIDDEN.getCode(), "无权限修改其他用户设备");
+        }
         DeviceVO device = deviceService.updateStatus(id, dto);
         return Result.success("状态更新成功", device);
     }

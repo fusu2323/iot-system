@@ -1,7 +1,10 @@
 package com.example.iot.controller;
 
+import com.example.iot.common.exception.BusinessException;
 import com.example.iot.common.result.Result;
+import com.example.iot.common.result.ResultCode;
 import com.example.iot.dto.UserPreferenceDTO;
+import com.example.iot.security.SecurityContextUtil;
 import com.example.iot.service.UserPreferenceService;
 import com.example.iot.vo.UserPreferenceVO;
 import io.swagger.v3.oas.annotations.Operation;
@@ -22,9 +25,11 @@ import java.util.List;
 public class PreferenceController {
 
     private final UserPreferenceService userPreferenceService;
+    private final SecurityContextUtil securityContextUtil;
 
-    public PreferenceController(UserPreferenceService userPreferenceService) {
+    public PreferenceController(UserPreferenceService userPreferenceService, SecurityContextUtil securityContextUtil) {
         this.userPreferenceService = userPreferenceService;
+        this.securityContextUtil = securityContextUtil;
     }
 
     /**
@@ -37,6 +42,11 @@ public class PreferenceController {
         @RequestParam Long userId,
         @RequestBody @Valid @Validated UserPreferenceDTO dto
     ) {
+        Long currentUserId = securityContextUtil.getCurrentUserId();
+        String currentRole = securityContextUtil.getCurrentUserRole();
+        if (!"ADMIN".equals(currentRole) && !currentUserId.equals(userId)) {
+            throw new BusinessException(ResultCode.FORBIDDEN.getCode(), "无权限操作其他用户偏好");
+        }
         userPreferenceService.setPreference(userId, dto.getContentType(), dto.getPreferenceScore(),
             dto.getClickWeight(), dto.getLikeWeight(), dto.getDislikeWeight());
         return Result.success("设置成功", null);
@@ -51,6 +61,11 @@ public class PreferenceController {
         @Parameter(description = "用户 ID", example = "1")
         @RequestParam Long userId
     ) {
+        Long currentUserId = securityContextUtil.getCurrentUserId();
+        String currentRole = securityContextUtil.getCurrentUserRole();
+        if (!"ADMIN".equals(currentRole) && !currentUserId.equals(userId)) {
+            throw new BusinessException(ResultCode.FORBIDDEN.getCode(), "无权限查看其他用户偏好");
+        }
         List<UserPreferenceVO> preferences = userPreferenceService.getPreferences(userId);
         return Result.success(preferences);
     }
@@ -66,6 +81,11 @@ public class PreferenceController {
         @Parameter(description = "内容类型", example = "MOVIE")
         @PathVariable String contentType
     ) {
+        Long currentUserId = securityContextUtil.getCurrentUserId();
+        String currentRole = securityContextUtil.getCurrentUserRole();
+        if (!"ADMIN".equals(currentRole) && !currentUserId.equals(userId)) {
+            throw new BusinessException(ResultCode.FORBIDDEN.getCode(), "无权限查看其他用户偏好");
+        }
         UserPreferenceVO preference = userPreferenceService.getPreference(userId, contentType);
         return Result.success(preference);
     }
@@ -81,6 +101,11 @@ public class PreferenceController {
         @Parameter(description = "内容类型", example = "MOVIE")
         @PathVariable String contentType
     ) {
+        Long currentUserId = securityContextUtil.getCurrentUserId();
+        String currentRole = securityContextUtil.getCurrentUserRole();
+        if (!"ADMIN".equals(currentRole) && !currentUserId.equals(userId)) {
+            throw new BusinessException(ResultCode.FORBIDDEN.getCode(), "无权限操作其他用户偏好");
+        }
         userPreferenceService.deletePreference(userId, contentType);
         return Result.success("删除成功", null);
     }

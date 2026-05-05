@@ -1,10 +1,15 @@
 package com.example.iot.controller;
 
 import com.baomidou.mybatisplus.core.metadata.IPage;
+import com.example.iot.common.exception.BusinessException;
 import com.example.iot.common.result.Result;
+import com.example.iot.common.result.ResultCode;
 import com.example.iot.dto.SceneCreateDTO;
 import com.example.iot.dto.SceneUpdateDTO;
+import com.example.iot.security.SecurityContextUtil;
+import com.example.iot.service.DeviceService;
 import com.example.iot.service.SceneService;
+import com.example.iot.vo.DeviceVO;
 import com.example.iot.vo.SceneVO;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.Parameter;
@@ -22,9 +27,13 @@ import org.springframework.web.bind.annotation.*;
 public class SceneController {
 
     private final SceneService sceneService;
+    private final DeviceService deviceService;
+    private final SecurityContextUtil securityContextUtil;
 
-    public SceneController(SceneService sceneService) {
+    public SceneController(SceneService sceneService, DeviceService deviceService, SecurityContextUtil securityContextUtil) {
         this.sceneService = sceneService;
+        this.deviceService = deviceService;
+        this.securityContextUtil = securityContextUtil;
     }
 
     /**
@@ -40,7 +49,13 @@ public class SceneController {
         @Parameter(description = "用户 ID", example = "1")
         @RequestParam(required = false) Long userId
     ) {
-        IPage<SceneVO> scenes = sceneService.list(page, size, userId);
+        Long currentUserId = securityContextUtil.getCurrentUserId();
+        String currentRole = securityContextUtil.getCurrentUserRole();
+        Long effectiveUserId = userId;
+        if (!"ADMIN".equals(currentRole)) {
+            effectiveUserId = currentUserId;
+        }
+        IPage<SceneVO> scenes = sceneService.list(page, size, effectiveUserId);
         return Result.success(scenes);
     }
 
@@ -54,6 +69,11 @@ public class SceneController {
         @PathVariable Long id
     ) {
         SceneVO scene = sceneService.getById(id);
+        Long currentUserId = securityContextUtil.getCurrentUserId();
+        String currentRole = securityContextUtil.getCurrentUserRole();
+        if (!"ADMIN".equals(currentRole) && (scene.getUserId() == null || !currentUserId.equals(scene.getUserId()))) {
+            throw new BusinessException(ResultCode.FORBIDDEN.getCode(), "无权限查看其他用户场景");
+        }
         return Result.success(scene);
     }
 
@@ -65,9 +85,17 @@ public class SceneController {
     public Result<Long> create(
         @RequestBody @Valid @Validated SceneCreateDTO dto,
         @Parameter(description = "用户 ID", example = "1")
-        @RequestParam Long userId
+        @RequestParam(required = false) Long userId
     ) {
-        Long sceneId = sceneService.create(dto, userId);
+        Long currentUserId = securityContextUtil.getCurrentUserId();
+        String currentRole = securityContextUtil.getCurrentUserRole();
+        Long effectiveUserId = userId;
+        if (!"ADMIN".equals(currentRole)) {
+            effectiveUserId = currentUserId;
+        } else if (effectiveUserId == null) {
+            effectiveUserId = currentUserId;
+        }
+        Long sceneId = sceneService.create(dto, effectiveUserId);
         return Result.success("创建成功", sceneId);
     }
 
@@ -81,6 +109,12 @@ public class SceneController {
         @PathVariable Long id,
         @RequestBody @Valid @Validated SceneUpdateDTO dto
     ) {
+        SceneVO existing = sceneService.getById(id);
+        Long currentUserId = securityContextUtil.getCurrentUserId();
+        String currentRole = securityContextUtil.getCurrentUserRole();
+        if (!"ADMIN".equals(currentRole) && (existing.getUserId() == null || !currentUserId.equals(existing.getUserId()))) {
+            throw new BusinessException(ResultCode.FORBIDDEN.getCode(), "无权限修改其他用户场景");
+        }
         SceneVO scene = sceneService.update(id, dto);
         return Result.success("更新成功", scene);
     }
@@ -94,6 +128,12 @@ public class SceneController {
         @Parameter(description = "场景 ID", example = "1")
         @PathVariable Long id
     ) {
+        SceneVO existing = sceneService.getById(id);
+        Long currentUserId = securityContextUtil.getCurrentUserId();
+        String currentRole = securityContextUtil.getCurrentUserRole();
+        if (!"ADMIN".equals(currentRole) && (existing.getUserId() == null || !currentUserId.equals(existing.getUserId()))) {
+            throw new BusinessException(ResultCode.FORBIDDEN.getCode(), "无权限删除其他用户场景");
+        }
         sceneService.delete(id);
         return Result.success("删除成功", null);
     }
@@ -107,6 +147,12 @@ public class SceneController {
         @Parameter(description = "场景 ID", example = "1")
         @PathVariable Long id
     ) {
+        SceneVO existing = sceneService.getById(id);
+        Long currentUserId = securityContextUtil.getCurrentUserId();
+        String currentRole = securityContextUtil.getCurrentUserRole();
+        if (!"ADMIN".equals(currentRole) && (existing.getUserId() == null || !currentUserId.equals(existing.getUserId()))) {
+            throw new BusinessException(ResultCode.FORBIDDEN.getCode(), "无权限操作其他用户场景");
+        }
         SceneVO scene = sceneService.toggle(id);
         return Result.success("操作成功", scene);
     }
@@ -120,6 +166,12 @@ public class SceneController {
         @Parameter(description = "场景 ID", example = "1")
         @PathVariable Long id
     ) {
+        SceneVO existing = sceneService.getById(id);
+        Long currentUserId = securityContextUtil.getCurrentUserId();
+        String currentRole = securityContextUtil.getCurrentUserRole();
+        if (!"ADMIN".equals(currentRole) && (existing.getUserId() == null || !currentUserId.equals(existing.getUserId()))) {
+            throw new BusinessException(ResultCode.FORBIDDEN.getCode(), "无权限操作其他用户场景");
+        }
         sceneService.trigger(id);
         return Result.success("场景触发成功", null);
     }
@@ -139,6 +191,18 @@ public class SceneController {
         @Parameter(description = "目标状态：0-禁用，1-启用", example = "1")
         @RequestParam(required = false, defaultValue = "1") Integer targetStatus
     ) {
+        SceneVO scene = sceneService.getById(id);
+        Long currentUserId = securityContextUtil.getCurrentUserId();
+        String currentRole = securityContextUtil.getCurrentUserRole();
+        if (!"ADMIN".equals(currentRole) && (scene.getUserId() == null || !currentUserId.equals(scene.getUserId()))) {
+            throw new BusinessException(ResultCode.FORBIDDEN.getCode(), "无权限修改其他用户场景");
+        }
+        if (!"ADMIN".equals(currentRole)) {
+            DeviceVO device = deviceService.getById(deviceId);
+            if (device.getUserId() == null || !currentUserId.equals(device.getUserId())) {
+                throw new BusinessException(ResultCode.FORBIDDEN.getCode(), "无权限关联其他用户设备");
+            }
+        }
         sceneService.addDevice(id, deviceId, config, targetStatus);
         return Result.success("关联成功", null);
     }
@@ -154,6 +218,12 @@ public class SceneController {
         @Parameter(description = "设备 ID", example = "1")
         @RequestParam Long deviceId
     ) {
+        SceneVO scene = sceneService.getById(id);
+        Long currentUserId = securityContextUtil.getCurrentUserId();
+        String currentRole = securityContextUtil.getCurrentUserRole();
+        if (!"ADMIN".equals(currentRole) && (scene.getUserId() == null || !currentUserId.equals(scene.getUserId()))) {
+            throw new BusinessException(ResultCode.FORBIDDEN.getCode(), "无权限修改其他用户场景");
+        }
         sceneService.removeDevice(id, deviceId);
         return Result.success("移除成功", null);
     }

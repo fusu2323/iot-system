@@ -1,7 +1,9 @@
 package com.example.iot.controller;
 
 import com.baomidou.mybatisplus.core.metadata.IPage;
+import com.example.iot.common.exception.BusinessException;
 import com.example.iot.common.result.Result;
+import com.example.iot.common.result.ResultCode;
 import com.example.iot.dto.UserUpdateDTO;
 import com.example.iot.security.SecurityContextUtil;
 import com.example.iot.service.UserService;
@@ -50,6 +52,11 @@ public class UserController {
         @Parameter(description = "用户 ID", example = "1")
         @PathVariable Long id
     ) {
+        Long currentUserId = securityContextUtil.getCurrentUserId();
+        String currentRole = securityContextUtil.getCurrentUserRole();
+        if (!"ADMIN".equals(currentRole) && !currentUserId.equals(id)) {
+            throw new BusinessException(ResultCode.FORBIDDEN.getCode(), "无权限查看其他用户信息");
+        }
         UserVO user = userService.getById(id);
         return Result.success(user);
     }
@@ -84,6 +91,11 @@ public class UserController {
         @PathVariable Long id,
         @RequestBody @Valid @Validated UserUpdateDTO dto
     ) {
+        Long currentUserId = securityContextUtil.getCurrentUserId();
+        String currentRole = securityContextUtil.getCurrentUserRole();
+        if (!"ADMIN".equals(currentRole) && !currentUserId.equals(id)) {
+            throw new BusinessException(ResultCode.FORBIDDEN.getCode(), "无权限修改其他用户信息");
+        }
         UserVO user = userService.update(id, dto);
         return Result.success("更新成功", user);
     }

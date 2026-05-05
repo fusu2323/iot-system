@@ -62,7 +62,7 @@ public class RecommendationServiceImpl implements RecommendationService {
                 .collect(Collectors.toMap(
                     UserPreference::getContentType,
                     UserPreference::getPreferenceScore,
-                    (existing, replacement) -> existing // 遇到重复 key 时保留第一个
+                    (existing, replacement) -> existing
                 ));
         }
 
