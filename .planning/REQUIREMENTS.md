@@ -1,88 +1,69 @@
-# Requirements: 智能家居娱乐管理系统论文初稿
+# Requirements: 智能家居娱乐管理系统 v2.0
 
-**Defined:** 2026-04-20
-**Core Value:** 完成智能家居娱乐管理系统论文初稿，包含完整的研究背景、需求分析、设计与测试章节
+**Defined:** 2026-05-05
+**Core Value:** 增加定时任务和使用统计功能，提升系统自动化能力和数据分析能力
 
 ## v1 Requirements
 
-### 论文结构 - 研究背景与意义
+### 定时任务 (Scheduled Tasks)
 
-- [ ] **THESIS-01**: 撰写研究背景章节，介绍智能家居行业发展现状与问题
-- [ ] **THESIS-02**: 撰写研究意义章节，阐述系统开发的价值与重要性
+- [ ] **SCHED-01**: 管理员可创建定时任务，指定关联场景和执行时间计划
+- [ ] **SCHED-02**: 支持多种时间类型：每日（每天固定时间）、工作日（周一至周五）、周末（周六日）、自定义cron表达式
+- [ ] **SCHED-03**: 系统按cron表达式在指定时间自动触发关联场景
+- [ ] **SCHED-04**: 管理员可单独启用/禁用每个定时任务
+- [ ] **SCHED-05**: 定时任务触发后记录执行结果（成功/失败）和时间
 
-### 论文结构 - 研究现状
+### 使用统计 (Usage Analytics)
 
-- [ ] **THESIS-03**: 分析国内外智能家居娱乐系统研究现状
-- [ ] **THESIS-04**: 调研现有技术的优缺点，明确本文创新点
+- [ ] **STATS-01**: 系统自动记录每次设备激活（status变为1）作为使用事件
+- [ ] **STATS-02**: 系统自动记录每次场景触发（trigger调用）作为使用事件
+- [ ] **STATS-03**: 用户可查看自己的设备和场景的使用次数统计（按日/周/月）
+- [ ] **STATS-04**: 管理员可查看全局设备/场景使用统计概览（使用次数排行）
+- [ ] **STATS-05**: 统计支持查看单条时间线（某设备/场景的历史激活记录）
 
-### 论文结构 - 可行性分析
+## v2 Requirements (Deferred)
 
-- [ ] **THESIS-05**: 技术可行性分析（Spring Boot + MySQL + JWT）
-- [ ] **THESIS-06**: 经济可行性分析
-- [ ] **THESIS-07**: 操作可行性分析
+### 通知系统
+- **NOTIF-01**: 场景触发时发送应用内通知
+- **NOTIF-02**: 定时任务失败时通知管理员
 
-### 论文结构 - 需求分析
+### 设备分组/区域
+- **ZONE-01**: 按房间/区域对设备分组管理
+- **ZONE-02**: 场景可按区域批量控制设备
 
-- [ ] **THESIS-08**: 用例图设计（管理员、普通用户角色）
-- [ ] **THESIS-09**: 功能分析（设备管理、场景管理、内容推荐、用户管理）
-- [ ] **THESIS-10**: 性能分析（响应时间、并发支持）
-
-### 论文结构 - 概要设计
-
-- [ ] **THESIS-11**: 数据库ER图设计（user, device, scene, content, recommendation等实体关系）
-- [ ] **THESIS-12**: 功能模块图设计（系统架构图）
-- [ ] **THESIS-13**: 时序图设计（用户登录、设备控制、场景触发等核心流程）
-
-### 论文结构 - 详细设计
-
-- [ ] **THESIS-14**: 程序流程图（设备管理流程、场景触发流程、推荐算法流程）
-
-### 论文结构 - 软件测试
-
-- [ ] **THESIS-15**: 白盒测试报告（单元测试、集成测试）
-- [ ] **THESIS-16**: 黑盒测试报告（功能测试、接口测试）
-
-### 论文结构 - 总结与展望
-
-- [ ] **THESIS-17**: 总结章节
-- [ ] **THESIS-18**: 展望与未来工作
+### 场景模板
+- **TEMPLATE-01**: 提供预设场景模板（如"影院模式"、"派对模式"）
+- **TEMPLATE-02**: 用户可保存自己的场景为模板
 
 ## Out of Scope
 
 | Feature | Reason |
 |---------|--------|
-| 真实物联网设备通信 | 论文聚焦软件系统设计，不涉及硬件通信 |
-| 微信小程序开发 | 已列入未来工作 |
-| Vue前端实现细节 | 论文侧重后端设计与架构 |
+| 物联网设备真实通信 | 本系统专注软件逻辑，不涉及真实硬件 |
+| 微信小程序开发 | 已列入未来工作计划 |
+| 实时通知推送 | 下个版本考虑 |
+| 数据导出/报表 | 下个版本考虑 |
 
 ## Traceability
 
 | Requirement | Phase | Status |
 |-------------|-------|--------|
-| THESIS-01 | Phase 12 | Pending |
-| THESIS-02 | Phase 12 | Pending |
-| THESIS-03 | Phase 12 | Pending |
-| THESIS-04 | Phase 12 | Pending |
-| THESIS-05 | Phase 12 | Pending |
-| THESIS-06 | Phase 12 | Pending |
-| THESIS-07 | Phase 12 | Pending |
-| THESIS-08 | Phase 13 | Pending |
-| THESIS-09 | Phase 13 | Pending |
-| THESIS-10 | Phase 13 | Pending |
-| THESIS-11 | Phase 14 | Pending |
-| THESIS-12 | Phase 14 | Pending |
-| THESIS-13 | Phase 14 | Pending |
-| THESIS-14 | Phase 15 | Pending |
-| THESIS-15 | Phase 16 | Pending |
-| THESIS-16 | Phase 16 | Pending |
-| THESIS-17 | Phase 17 | Pending |
-| THESIS-18 | Phase 17 | Pending |
+| SCHED-01 | Phase 20 | Pending |
+| SCHED-02 | Phase 20 | Pending |
+| SCHED-03 | Phase 21 | Pending |
+| SCHED-04 | Phase 20 | Pending |
+| SCHED-05 | Phase 21 | Pending |
+| STATS-01 | Phase 22 | Pending |
+| STATS-02 | Phase 22 | Pending |
+| STATS-03 | Phase 23 | Pending |
+| STATS-04 | Phase 23 | Pending |
+| STATS-05 | Phase 23 | Pending |
 
 **Coverage:**
-- v1 requirements: 18 total
-- Mapped to phases: 18
+- v1 requirements: 10 total
+- Mapped to phases: 10
 - Unmapped: 0 ✓
 
 ---
-*Requirements defined: 2026-04-20*
-*Last updated: 2026-04-20 after initial definition*
+*Requirements defined: 2026-05-05*
+*Last updated: 2026-05-05 after v2.0 milestone start*
