@@ -1,0 +1,45 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.example.iot.mapper.ScheduledTaskMapper">
+
+    <resultMap id="BaseResultMap" type="com.example.iot.entity.ScheduledTask">
+        <id column="id" property="id"/>
+        <result column="name" property="name"/>
+        <result column="scene_id" property="sceneId"/>
+        <result column="schedule_type" property="scheduleType"/>
+        <result column="cron_expression" property="cronExpression"/>
+        <result column="time_config" property="timeConfig"/>
+        <result column="is_enabled" property="isEnabled"/>
+        <result column="next_fire_time" property="nextFireTime"/>
+        <result column="created_by" property="createdBy"/>
+        <result column="deleted" property="deleted"/>
+        <result column="create_time" property="createTime"/>
+        <result column="update_time" property="updateTime"/>
+    </resultMap>
+
+    <!-- ResultMap with scene name JOIN -->
+    <resultMap id="ScheduledTaskWithSceneResultMap" type="com.example.iot.entity.vo.ScheduledTaskVO"
+               extends="BaseResultMap">
+        <result column="scene_name" property="sceneName"/>
+    </resultMap>
+
+    <!-- Base column list -->
+    <sql id="Base_Column_List">
+        st.id, st.name, st.scene_id, st.schedule_type, st.cron_expression,
+        st.time_config, st.is_enabled, st.next_fire_time, st.created_by,
+        st.deleted, st.create_time, st.update_time
+    </sql>
+
+    <!-- JOIN with scene table for list query -->
+    <select id="selectScheduledTaskPage" resultMap="ScheduledTaskWithSceneResultMap">
+        SELECT st.*, s.name AS scene_name
+        FROM scheduled_task st
+        LEFT JOIN scene s ON st.scene_id = s.id
+        WHERE st.deleted = 0
+        <if test="name != null and name != ''">
+            AND st.name LIKE CONCAT('%', #{name}, '%')
+        </if>
+        ORDER BY st.create_time DESC
+    </select>
+
+</mapper>

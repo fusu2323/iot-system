@@ -4,7 +4,7 @@ milestone: v2.0
 milestone_name: 新功能开发
 status: Defining requirements
 last_updated: "2026-05-05T00:00:00.000Z"
-last_activity: 2026-05-05 — Milestone v2.0 started
+last_activity: 2026-05-05 — Phase 20 context gathered (scheduled task CRUD)
 progress:
   total_phases: 0
   completed_phases: 0

@@ -44,7 +44,12 @@ public enum ResultCode {
     PREFERENCE_NOT_FOUND(5001, "用户偏好不存在"),
 
     // 日志相关错误码 (6000-6999)
-    LOG_NOT_FOUND(6001, "日志不存在");
+    LOG_NOT_FOUND(6001, "日志不存在"),
+
+    // 定时任务相关错误码 (7000-7999)
+    TASK_NOT_FOUND(7001, "定时任务不存在"),
+    TASK_ALREADY_EXISTS(7002, "定时任务已存在"),
+    INVALID_CRON_EXPRESSION(7003, "无效的CRON表达式");
 
     private final Integer code;
     private final String message;

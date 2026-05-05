@@ -11,7 +11,7 @@
 
 | Phase | Milestone | Plans | Status | Completed |
 |-------|-----------|-------|--------|-----------|
-| 20 | v2.0 | 0/3 | Not started | — |
+| 20 | v2.0 | 3/3 | Not started | — |
 | 21 | v2.0 | 0/3 | Not started | — |
 | 22 | v2.0 | 0/3 | Not started | — |
 | 23 | v2.0 | 0/4 | Not started | — |
@@ -44,7 +44,10 @@
 4. 管理员可为每个任务单独启用或禁用，禁用后任务不参与调度
 5. 定时任务列表页显示所有任务及其当前启用状态、关联场景名称
 
-**Plans:** TBD
+**Plans:**
+- [ ] 20-01-PLAN.md — Database Entity + Mapper + Enum
+- [ ] 20-02-PLAN.md — Service Layer + VO
+- [ ] 20-03-PLAN.md — Controller + Frontend API
 
 ---
 
