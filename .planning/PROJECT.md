@@ -12,20 +12,7 @@
 - 多用户权限管理（管理员/普通用户）
 - 微信小程序便捷访问
 
-## 3. Current Milestone: v1.2 论文初稿撰写
-
-**Goal:** 完成智能家居娱乐管理系统论文初稿，涵盖研究背景、可行性分析、需求分析、概要设计、详细设计、软件测试等内容。
-
-**Target features:**
-- 研究背景与意义
-- 研究现状分析
-- 可行性分析（技术、经济、操作）
-- 需求分析（用例图、功能分析、性能分析）
-- 概要设计（数据库ER图、功能模块图、时序图）
-- 详细设计（程序流程图）
-- 软件测试（白盒测试报告、黑盒测试报告）
-
-## 4. Validated Requirements
+## 3. Validated Requirements
 
 ### v1.0 Foundation
 - ✓ 用户注册与认证 (AUTH-01, AUTH-02)
@@ -41,48 +28,71 @@
 - ✓ RECOMMEND-01/02/03: 推荐增强与权重配置
 - ✓ PERMISSION-01/02/03: 接口权限校验
 
-## 5. Active Requirements
-
 ### v1.2 论文初稿撰写
-- [ ] **THESIS-01**: 研究背景章节
-- [ ] **THESIS-02**: 研究意义章节
-- [ ] **THESIS-03**: 研究现状章节
-- [ ] **THESIS-04**: 可行性分析章节（技术/经济/操作）
-- [ ] **THESIS-05**: 需求分析（用例图、功能分析、性能分析）
-- [ ] **THESIS-06**: 概要设计（ER图、功能模块图、时序图）
-- [ ] **THESIS-07**: 详细设计（程序流程图）
-- [ ] **THESIS-08**: 软件测试（白盒测试报告、黑盒测试报告）
+- ✓ THESIS-01~18: 论文各章节完成
 
-## 6. Out of Scope
+## 4. Active Requirements (v2.0)
 
-- 物联网设备真实通信
-- 微信小程序开发
-- Web管理后台Vue开发
-- 定时触发场景功能
-- 预设场景模板
+### 定时任务 (Scheduled Tasks)
+- [ ] **SCHED-01**: 管理员可创建定时任务，指定场景和时间计划
+- [ ] **SCHED-02**: 支持多种时间类型：每日、工作日、周末、自定义cron
+- [ ] **SCHED-03**: 定时任务到点自动触发关联场景
+- [ ] **SCHED-04**: 管理员可启用/禁用定时任务
+- [ ] **SCHED-05**: 定时任务可查看执行历史记录
 
-## 7. Key Decisions
+### 使用统计 (Usage Analytics)
+- [ ] **STATS-01**: 系统记录设备和场景的每次激活
+- [ ] **STATS-02**: 用户可查看设备和场景的使用次数统计
+- [ ] **STATS-03**: 支持按日/周/月维度查看使用趋势
+- [ ] **STATS-04**: 管理员可查看全局使用统计概览
 
-| Decision | Outcome |
-|----------|---------|
-| Spring Security + JWT 认证 | ✅ 继续使用 |
-| MyBatis-Plus ORM | ✅ 继续使用 |
-| 场景互斥通过 scene_mutex_group 字段 | ✅ 已实现 |
-| Device sync in trigger(), not toggle() | ✅ 集中管理 |
-| getRecommendations() 返回 GroupedRecommendationResponse | ✅ 已实现 |
-| UserPreference weight 字段: clickWeight/likeWeight/dislikeWeight | ✅ 已实现 |
+## 5. Out of Scope
 
-## 8. Context
+| Feature | Reason |
+|---------|--------|
+| 物联网设备真实通信 | 论文聚焦软件系统设计，不涉及硬件通信 |
+| 微信小程序开发 | 已列入未来工作 |
+| 设备分组/区域管理 | 下个版本考虑 |
+| 通知系统 | 下个版本考虑 |
+| 预设场景模板 | 下个版本考虑 |
 
-- 技术栈: Spring Boot 3.x + MySQL 8.x + Spring Security + JWT
-- 项目结构: 前后端分离
-- 当前进度: v1.2 论文初稿撰写中
-- 代码规模: v1.0 + v1.1 完成
+## 6. Key Decisions
 
-## 9. Next Milestone
+| Decision | Rationale | Outcome |
+|----------|-----------|---------|
+| Spring Security + JWT 认证 | 继续使用 | ✅ |
+| MyBatis-Plus ORM | 继续使用 | ✅ |
+| 场景互斥通过 scene_mutex_group 字段 | 继续使用 | ✅ |
+| Device sync in trigger(), not toggle() | 集中管理 | ✅ |
+| getRecommendations() 返回 GroupedRecommendationResponse | 继续使用 | ✅ |
+| 定时任务用 cron 表达式 | 灵活，支持复杂时间规则 | ✅ |
+| 使用统计用独立 stat_log 表 | 不污染核心业务表 | ✅ |
 
-v1.2 论文初稿撰写 — 进行中
+## 7. Context
+
+- 技术栈: Spring Boot 3.x + MySQL 8.x + Spring Security + JWT + MyBatis-Plus
+- 项目结构: 前后端分离（Vue 3 前端已初始化）
+- 代码规模: v1.0 + v1.1 完成，v1.2 论文完成
+- 定时任务实现: 使用 Spring @Scheduled + cron 表达式
+- 统计实现: 新建 operation_stat_log 表，记录设备/场景激活事件
+
+## 8. Evolution
+
+This document evolves at phase transitions and milestone boundaries.
+
+**After each phase transition** (via `/gsd-transition`):
+1. Requirements invalidated? → Move to Out of Scope with reason
+2. Requirements validated? → Move to Validated with phase reference
+3. New requirements emerged? → Add to Active
+4. Decisions to log? → Add to Key Decisions
+5. "What This Is" still accurate? → Update if drifted
+
+**After each milestone** (via `/gsd-complete-milestone`):
+1. Full review of all sections
+2. Core Value check — still the right priority?
+3. Audit Out of Scope — reasons still valid?
+4. Update Context with current state
 
 ---
 
-**Last updated:** 2026-04-20 after v1.2 milestone start
+*Last updated: 2026-05-05 after v1.2 milestone complete, starting v2.0*
