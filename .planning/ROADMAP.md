@@ -12,7 +12,7 @@
 | Phase | Milestone | Plans | Status | Completed |
 |-------|-----------|-------|--------|-----------|
 | 20 | v2.0 | 3/3 | Not started | — |
-| 21 | v2.0 | 0/3 | Not started | — |
+| 21 | v2.0 | 3/3 | Planned | — |
 | 22 | v2.0 | 0/3 | Not started | — |
 | 23 | v2.0 | 0/4 | Not started | — |
 
@@ -65,7 +65,10 @@
 3. 管理员可查看某定时任务的历史执行记录列表
 4. 执行失败时记录失败原因（错误信息）
 
-**Plans:** TBD
+**Plans:**
+- [ ] 21-01-PLAN.md — Database Entity + Mapper + Migration
+- [ ] 21-02-PLAN.md — Scheduler Executor + Service Layer
+- [ ] 21-03-PLAN.md — REST API for Execution Log Queries
 
 ---
 
