@@ -29,5 +29,8 @@ export * from './recommend';
 // 数据统计
 export * from './dashboard';
 
+// 使用统计
+export * from './usage';
+
 // 系统配置
 export * from './system';

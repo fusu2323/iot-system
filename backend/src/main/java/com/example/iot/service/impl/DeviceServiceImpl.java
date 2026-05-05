@@ -12,6 +12,7 @@ import com.example.iot.entity.Device;
 import com.example.iot.mapper.DeviceMapper;
 import com.example.iot.service.DeviceService;
 import com.example.iot.service.OperationLogService;
+import com.example.iot.service.StatLogService;
 import com.example.iot.vo.DeviceStatisticsVO;
 import com.example.iot.vo.DeviceVO;
 import org.slf4j.Logger;
@@ -34,10 +35,13 @@ public class DeviceServiceImpl implements DeviceService {
 
     private final DeviceMapper deviceMapper;
     private final OperationLogService operationLogService;
+    private final StatLogService statLogService;
 
-    public DeviceServiceImpl(DeviceMapper deviceMapper, OperationLogService operationLogService) {
+    public DeviceServiceImpl(DeviceMapper deviceMapper, OperationLogService operationLogService,
+                             StatLogService statLogService) {
         this.deviceMapper = deviceMapper;
         this.operationLogService = operationLogService;
+        this.statLogService = statLogService;
     }
 
     @Override
@@ -170,6 +174,11 @@ public class DeviceServiceImpl implements DeviceService {
 
         // 记录操作日志
         operationLogService.log(device.getUserId(), "UPDATE_STATUS", "DEVICE", id, null);
+
+        // STATS-01: 设备status变为1时，写入激活记录
+        if (dto.getStatus() != null && dto.getStatus() == 1 && device.getUserId() != null) {
+            statLogService.log(device.getUserId(), "DEVICE", id, "ACTIVATE");
+        }
 
         return convertToVO(device);
     }

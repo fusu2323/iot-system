@@ -44,7 +44,10 @@ public enum ResultCode {
     PREFERENCE_NOT_FOUND(5001, "用户偏好不存在"),
 
     // 日志相关错误码 (6000-6999)
-    LOG_NOT_FOUND(6001, "日志不存在");
+    LOG_NOT_FOUND(6001, "日志不存在"),
+
+    // 统计相关错误码 (7000-7999)
+    STATS_NOT_FOUND(7001, "统计数据不存在");
 
     private final Integer code;
     private final String message;
