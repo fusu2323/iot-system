@@ -1,0 +1,103 @@
+/* 精质图标系统 - 专业 SVG 图标样式 */
+
+/* Logo 图标 */
+.logo-icon-svg {
+  width: 40px;
+  height: 40px;
+  filter: drop-shadow(0 2px 4px rgba(90, 93, 67, 0.2));
+}
+
+/* 导航图标 */
+.nav-icon-svg {
+  width: 20px;
+  height: 20px;
+  transition: transform 0.2s ease;
+}
+
+.nav-item:hover .nav-icon-svg {
+  transform: scale(1.05);
+}
+
+/* 统计卡片图标容器 - 精修渐变 */
+.stat-icon-container {
+  width: 48px;
+  height: 48px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border-radius: 14px;
+  transition: transform 0.3s ease;
+}
+
+.stat-card:hover .stat-icon-container {
+  transform: scale(1.1);
+}
+
+.stat-icon-container.green {
+  background: linear-gradient(145deg, #10b981 0%, #059669 100%);
+  color: #ecfdf5;
+  box-shadow: 0 4px 12px rgba(16, 185, 129, 0.25);
+}
+
+.stat-icon-container.blue {
+  background: linear-gradient(145deg, #3b82f6 0%, #2563eb 100%);
+  color: #eff6ff;
+  box-shadow: 0 4px 12px rgba(59, 130, 246, 0.25);
+}
+
+.stat-icon-container.pink {
+  background: linear-gradient(145deg, #ec4899 0%, #db2777 100%);
+  color: #fdf2f8;
+  box-shadow: 0 4px 12px rgba(236, 72, 153, 0.25);
+}
+
+.stat-icon-container.purple {
+  background: linear-gradient(145deg, #8b5cf6 0%, #7c3aed 100%);
+  color: #f5f3ff;
+  box-shadow: 0 4px 12px rgba(139, 92, 246, 0.25);
+}
+
+.stat-icon-container.orange {
+  background: linear-gradient(145deg, #f59e0b 0%, #d97706 100%);
+  color: #fffbeb;
+  box-shadow: 0 4px 12px rgba(245, 158, 11, 0.25);
+}
+
+/* 场景图标容器 - 精修渐变 */
+.scene-icon-container {
+  width: 44px;
+  height: 44px;
+  border-radius: 12px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: transform 0.3s ease, box-shadow 0.3s ease;
+}
+
+.scene-item:hover .scene-icon-container {
+  transform: scale(1.08);
+}
+
+.scene-icon-container.cinema {
+  background: linear-gradient(145deg, #1a1a2e 0%, #2d2d44 100%);
+  color: #fff;
+  box-shadow: 0 4px 12px rgba(26, 26, 46, 0.3);
+}
+
+.scene-icon-container.home {
+  background: linear-gradient(145deg, #2d5a3d 0%, #3d7a52 100%);
+  color: #e8f5e9;
+  box-shadow: 0 4px 12px rgba(45, 90, 61, 0.3);
+}
+
+.scene-icon-container.sleep {
+  background: linear-gradient(145deg, #1e3a5f 0%, #2d4a7f 100%);
+  color: #e3f2fd;
+  box-shadow: 0 4px 12px rgba(30, 58, 95, 0.3);
+}
+
+.scene-icon-container.leave {
+  background: linear-gradient(145deg, #8b6914 0%, #a07a1e 100%);
+  color: #fffbeb;
+  box-shadow: 0 4px 12px rgba(139, 105, 20, 0.3);
+}

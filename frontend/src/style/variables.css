@@ -1,0 +1,47 @@
+/* 大地色系主题变量 - 参照原型设计 */
+:root {
+  /* 背景色 */
+  --bg-primary: #F5F5F0;
+  --bg-secondary: #FAFAF8;
+  --bg-card: #FFFFFF;
+  --bg-hover: #F0F0EB;
+
+  /* 主色调 */
+  --primary-color: #5A5D43;
+  --primary-light: #7A7D5A;
+  --primary-dark: #4A4D33;
+
+  /* 文字颜色 */
+  --text-primary: #333333;
+  --text-secondary: #666666;
+  --text-muted: #999999;
+
+  /* 边框颜色 */
+  --border-color: #E8E8E3;
+  --border-light: #F0F0EB;
+
+  /* 状态颜色 */
+  --success-bg: #C8E6D0;
+  --success-text: #2D5A3D;
+  --warning-bg: #FFF4D6;
+  --warning-text: #8B6914;
+  --error-bg: #FFE0E0;
+  --error-text: #8B2D2D;
+  --info-bg: #E0F0FF;
+  --info-text: #2D5A8B;
+
+  /* 阴影 */
+  --shadow-sm: 0 1px 3px rgba(0, 0, 0, 0.04);
+  --shadow-md: 0 4px 12px rgba(0, 0, 0, 0.06);
+  --shadow-lg: 0 8px 24px rgba(0, 0, 0, 0.08);
+
+  /* 圆角 */
+  --radius-sm: 8px;
+  --radius-md: 12px;
+  --radius-lg: 16px;
+  --radius-xl: 20px;
+
+  /* 过渡 */
+  --transition-fast: 0.2s ease;
+  --transition-normal: 0.3s ease;
+}

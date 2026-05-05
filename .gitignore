@@ -13,7 +13,6 @@ backend/target/
 */target/
 
 # Frontend & miniprogram (if separate repo)
-frontend/
 miniprogram/
 prototype/
 mermaid_images/
