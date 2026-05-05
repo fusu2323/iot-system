@@ -76,8 +76,9 @@ public interface SceneService {
      * @param sceneId 场景 ID
      * @param deviceId 设备 ID
      * @param config 设备配置
+     * @param targetStatus 目标状态：0-禁用，1-启用
      */
-    void addDevice(Long sceneId, Long deviceId, String config);
+    void addDevice(Long sceneId, Long deviceId, String config, Integer targetStatus);
 
     /**
      * 移除场景设备关联

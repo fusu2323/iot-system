@@ -9,9 +9,14 @@ import request from '@/utils/request';
  * 场景设备配置
  */
 export interface SceneDeviceConfig {
+  id?: number;
+  sceneId?: number;
   deviceId: number;
   deviceName: string;
   config?: string;
+  targetStatus?: number;
+  createTime?: string;
+  updateTime?: string;
 }
 
 /**
@@ -117,11 +122,11 @@ export function triggerScene(id: number): Promise<void> {
 
 /**
  * 添加场景设备关联
- * POST /api/scenes/{id}/devices?deviceId={deviceId}&config={config}
+ * POST /api/scenes/{id}/devices?deviceId={deviceId}&config={config}&targetStatus={targetStatus}
  */
-export function addSceneDevice(id: number, deviceId: number, config?: string): Promise<void> {
+export function addSceneDevice(id: number, deviceId: number, config?: string, targetStatus?: number): Promise<void> {
   return request.post(`/scenes/${id}/devices`, null, {
-    params: { deviceId, config }
+    params: { deviceId, config, targetStatus }
   });
 }
 

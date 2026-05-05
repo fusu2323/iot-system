@@ -27,6 +27,9 @@ public class SceneDevice implements Serializable {
     @Schema(description = "设备配置（JSON）")
     private String config;
 
+    @Schema(description = "目标状态：0-禁用，1-启用")
+    private Integer targetStatus;
+
     @Schema(description = "逻辑删除：0-未删除，1-已删除")
     @TableLogic
     private Integer deleted;
@@ -47,6 +50,8 @@ public class SceneDevice implements Serializable {
     public void setDeviceId(Long deviceId) { this.deviceId = deviceId; }
     public String getConfig() { return config; }
     public void setConfig(String config) { this.config = config; }
+    public Integer getTargetStatus() { return targetStatus; }
+    public void setTargetStatus(Integer targetStatus) { this.targetStatus = targetStatus; }
     public Integer getDeleted() { return deleted; }
     public void setDeleted(Integer deleted) { this.deleted = deleted; }
     public LocalDateTime getCreateTime() { return createTime; }

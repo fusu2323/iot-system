@@ -215,7 +215,7 @@ public class SceneServiceImpl implements SceneService {
 
     @Override
     @Transactional
-    public void addDevice(Long sceneId, Long deviceId, String config) {
+    public void addDevice(Long sceneId, Long deviceId, String config, Integer targetStatus) {
         Scene scene = sceneMapper.selectById(sceneId);
         if (scene == null || scene.getDeleted() == 1) {
             throw new BusinessException(ResultCode.SCENE_NOT_FOUND);
@@ -239,10 +239,11 @@ public class SceneServiceImpl implements SceneService {
         sceneDevice.setSceneId(sceneId);
         sceneDevice.setDeviceId(deviceId);
         sceneDevice.setConfig(config);
+        sceneDevice.setTargetStatus(targetStatus != null ? targetStatus : 1);
 
         sceneDeviceMapper.insert(sceneDevice);
 
-        log.info("场景设备关联添加成功：sceneId={}, deviceId={}", sceneId, deviceId);
+        log.info("场景设备关联添加成功：sceneId={}, deviceId={}, targetStatus={}", sceneId, deviceId, sceneDevice.getTargetStatus());
     }
 
     @Override
@@ -265,20 +266,27 @@ public class SceneServiceImpl implements SceneService {
     }
 
     /**
-     * Sync all linked devices to target status when scene is enabled/disabled.
+     * Sync all linked devices to their configured target status when scene is enabled.
+     * When scene is disabled, does nothing (devices remain in their current state).
      * @param sceneId the scene ID
-     * @param targetStatus 1=enabled, 0=disabled
+     * @param sceneEnabled 1=scene enabled, 0=scene disabled
      */
-    private void syncDevices(Long sceneId, Integer targetStatus) {
+    private void syncDevices(Long sceneId, Integer sceneEnabled) {
+        if (sceneEnabled != 1) {
+            log.info("scene disabled, skipping device sync: sceneId={}", sceneId);
+            return;
+        }
+        
         LambdaQueryWrapper<SceneDevice> wrapper = new LambdaQueryWrapper<>();
         wrapper.eq(SceneDevice::getSceneId, sceneId);
         List<SceneDevice> sceneDevices = sceneDeviceMapper.selectList(wrapper);
         for (SceneDevice sd : sceneDevices) {
             Device device = deviceMapper.selectById(sd.getDeviceId());
             if (device != null && device.getDeleted() == 0) {
-                device.setStatus(targetStatus);
+                Integer deviceTargetStatus = sd.getTargetStatus() != null ? sd.getTargetStatus() : 1;
+                device.setStatus(deviceTargetStatus);
                 deviceMapper.updateById(device);
-                log.info("device sync: deviceId={}, sceneId={}, status={}", device.getId(), sceneId, targetStatus);
+                log.info("device sync: deviceId={}, sceneId={}, targetStatus={}", device.getId(), sceneId, deviceTargetStatus);
             }
         }
     }
@@ -332,6 +340,7 @@ public class SceneServiceImpl implements SceneService {
             vo.setDeviceId(sd.getDeviceId());
             vo.setDeviceName(device != null ? device.getName() : null);
             vo.setConfig(sd.getConfig());
+            vo.setTargetStatus(sd.getTargetStatus());
             vo.setCreateTime(sd.getCreateTime());
             vo.setUpdateTime(sd.getUpdateTime());
             result.add(vo);

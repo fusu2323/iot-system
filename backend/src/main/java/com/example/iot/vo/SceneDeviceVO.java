@@ -24,6 +24,9 @@ public class SceneDeviceVO {
     @Schema(description = "设备配置（JSON）", example = "{\"brightness\": 50}")
     private String config;
 
+    @Schema(description = "目标状态：0-禁用，1-启用", example = "1")
+    private Integer targetStatus;
+
     @Schema(description = "创建时间", example = "2026-03-12 10:00:00")
     private LocalDateTime createTime;
 
@@ -40,6 +43,8 @@ public class SceneDeviceVO {
     public void setDeviceName(String deviceName) { this.deviceName = deviceName; }
     public String getConfig() { return config; }
     public void setConfig(String config) { this.config = config; }
+    public Integer getTargetStatus() { return targetStatus; }
+    public void setTargetStatus(Integer targetStatus) { this.targetStatus = targetStatus; }
     public LocalDateTime getCreateTime() { return createTime; }
     public void setCreateTime(LocalDateTime createTime) { this.createTime = createTime; }
     public LocalDateTime getUpdateTime() { return updateTime; }

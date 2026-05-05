@@ -21,12 +21,18 @@
           <div class="scene-devices" v-if="scene.devices && scene.devices.length > 0">
             <span v-for="device in scene.devices" :key="device.deviceId" class="device-tag">
               {{ device.deviceName }}
+              <span class="device-status-badge" :class="device.targetStatus === 1 ? 'on' : 'off'">
+                {{ device.targetStatus === 1 ? '开' : '关' }}
+              </span>
             </span>
           </div>
         </div>
         <div class="scene-actions">
           <button class="btn-toggle" :class="{ active: scene.isEnabled === 1 }" @click="toggleScene(scene)">
             {{ scene.isEnabled === 1 ? '已启用' : '启用' }}
+          </button>
+          <button class="btn-trigger" @click="triggerSceneAction(scene)">
+            触发
           </button>
           <button class="btn-edit" @click="editScene(scene)">
             <Icon name="edit" :size="16" />
@@ -82,14 +88,20 @@
           <div class="form-group">
             <label class="form-label">关联设备</label>
             <div class="device-select">
-              <label v-for="device in allDevices" :key="device" class="device-checkbox">
-                <input
-                  type="checkbox"
-                  :value="device"
-                  v-model="formData.devices"
-                />
-                <span>{{ device }}</span>
-              </label>
+              <div v-for="device in allDevices" :key="device.id" class="device-item">
+                <label class="device-checkbox">
+                  <input
+                    type="checkbox"
+                    :value="device.id"
+                    v-model="selectedDeviceIds"
+                  />
+                  <span>{{ device.name }}</span>
+                </label>
+                <select v-if="selectedDeviceIds.includes(device.id)" v-model="deviceTargetStatus[device.id]" class="target-status-select">
+                  <option :value="1">开启</option>
+                  <option :value="0">关闭</option>
+                </select>
+              </div>
             </div>
           </div>
           <div class="modal-actions">
@@ -121,8 +133,11 @@ import {
   deleteScene,
   toggleScene as apiToggleScene,
   triggerScene as apiTriggerScene,
+  addSceneDevice,
+  removeSceneDevice,
   type SceneInfo,
 } from '@/api/scene';
+import { getDeviceList, type DeviceInfo } from '@/api/device';
 import { useUserStore } from '@/stores/user';
 
 const userStore = useUserStore();
@@ -137,12 +152,12 @@ const formData = ref<any>({
   description: '',
   icon: 'scene-home',
   mutexGroup: '',
-  devices: [],
 });
 
 const scenes = ref<SceneInfo[]>([]);
-
-const allDevices = ['灯光', '空调', '电视', '音响', '窗帘', '门锁', '摄像头', '传感器'];
+const allDevices = ref<DeviceInfo[]>([]);
+const selectedDeviceIds = ref<number[]>([]);
+const deviceTargetStatus = ref<Record<number, number>>({});
 
 const toast = ref({ show: false, type: 'success', message: '' });
 
@@ -160,10 +175,21 @@ const loadScenes = async () => {
   }
 };
 
+// 加载设备列表
+const loadDevices = async () => {
+  try {
+    const result = await getDeviceList({ page: 1, size: 100 });
+    allDevices.value = result.records;
+  } catch (error) {
+    console.error('加载设备列表失败:', error);
+  }
+};
+
 const toggleScene = async (scene: any) => {
   try {
     await apiToggleScene(scene.id);
     await loadScenes();
+    await loadDevices();
     const updated = scenes.value.find(s => s.id === scene.id);
     showToast('success', `${scene.name}已${updated?.isEnabled === 1 ? '启用' : '关闭'}`);
   } catch (error: any) {
@@ -175,6 +201,7 @@ const toggleScene = async (scene: any) => {
 const triggerSceneAction = async (scene: any) => {
   try {
     await apiTriggerScene(scene.id);
+    await loadDevices();
     showToast('success', `场景 "${scene.name}" 已触发`);
   } catch (error: any) {
     console.error('触发场景失败:', error);
@@ -190,8 +217,19 @@ const editScene = (scene: any) => {
     description: scene.description,
     icon: scene.icon || 'scene-home',
     mutexGroup: scene.mutexGroup || '',
-    devices: scene.devices?.map((d: any) => d.deviceName) || [],
   };
+  
+  // 初始化已选中的设备和目标状态
+  selectedDeviceIds.value = [];
+  deviceTargetStatus.value = {};
+  
+  if (scene.devices) {
+    for (const device of scene.devices) {
+      selectedDeviceIds.value.push(device.deviceId);
+      deviceTargetStatus.value[device.deviceId] = device.targetStatus ?? 1;
+    }
+  }
+  
   showAddModal.value = true;
 };
 
@@ -220,12 +258,37 @@ const handleSubmit = async () => {
       mutexGroup: formData.value.mutexGroup || null,
     };
 
+    let sceneId: number;
     if (isEditing.value && formData.value.id) {
       await updateScene(formData.value.id, submitData);
+      sceneId = formData.value.id;
       showToast('success', '场景已更新');
     } else {
-      await createScene(currentUserId, submitData);
+      sceneId = await createScene(currentUserId, submitData);
       showToast('success', '场景已添加');
+    }
+
+    // 处理设备关联
+    if (isEditing.value && formData.value.id) {
+      const currentScene = scenes.value.find(s => s.id === formData.value.id);
+      if (currentScene?.devices) {
+        for (const existingDevice of currentScene.devices) {
+          if (!selectedDeviceIds.value.includes(existingDevice.deviceId)) {
+            await removeSceneDevice(formData.value.id, existingDevice.deviceId);
+          }
+        }
+      }
+    }
+
+    // 添加新的设备关联
+    for (const deviceId of selectedDeviceIds.value) {
+      const currentScene = scenes.value.find(s => s.id === (isEditing.value ? formData.value.id : sceneId));
+      const existingDevice = currentScene?.devices?.find(d => d.deviceId === deviceId);
+      
+      if (!existingDevice) {
+        const targetStatus = deviceTargetStatus.value[deviceId] ?? 1;
+        await addSceneDevice(isEditing.value ? formData.value.id : sceneId, deviceId, undefined, targetStatus);
+      }
     }
 
     showAddModal.value = false;
@@ -245,6 +308,7 @@ const showToast = (type: string, message: string) => {
 
 onMounted(() => {
   loadScenes();
+  loadDevices();
 });
 </script>
 
@@ -326,11 +390,31 @@ onMounted(() => {
 }
 
 .device-tag {
+  display: flex;
+  align-items: center;
+  gap: 6px;
   padding: 4px 10px;
   background: var(--bg-secondary);
   border-radius: 8px;
   font-size: 12px;
   color: var(--text-secondary);
+}
+
+.device-status-badge {
+  padding: 1px 6px;
+  border-radius: 4px;
+  font-size: 10px;
+  font-weight: 500;
+}
+
+.device-status-badge.on {
+  background: rgba(46, 125, 50, 0.15);
+  color: #2e7d32;
+}
+
+.device-status-badge.off {
+  background: rgba(211, 47, 47, 0.15);
+  color: #d32f2f;
 }
 
 .mutex-badge {
@@ -365,7 +449,8 @@ onMounted(() => {
   gap: 8px;
 }
 
-.btn-toggle {
+.btn-toggle,
+.btn-trigger {
   flex: 1;
   padding: 8px 16px;
   background: var(--primary-color);
@@ -377,7 +462,8 @@ onMounted(() => {
   transition: all 0.2s;
 }
 
-.btn-toggle:not(.active) {
+.btn-toggle:not(.active),
+.btn-trigger:not(.active) {
   background: var(--bg-secondary);
   color: var(--text-secondary);
   border: 1px solid var(--border-color);
@@ -428,6 +514,44 @@ onMounted(() => {
   color: var(--text-muted);
 }
 
+/* Device Select */
+.device-select {
+  display: grid;
+  grid-template-columns: 1fr;
+  gap: 8px;
+}
+
+.device-item {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 10px 12px;
+  background: var(--bg-secondary);
+  border-radius: 8px;
+}
+
+.device-checkbox {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  cursor: pointer;
+  font-size: 13px;
+}
+
+.device-checkbox input {
+  width: 16px;
+  height: 16px;
+}
+
+.target-status-select {
+  padding: 4px 8px;
+  background: var(--bg-card);
+  border: 1px solid var(--border-color);
+  border-radius: 6px;
+  font-size: 12px;
+  cursor: pointer;
+}
+
 /* Modal */
 .modal-overlay {
   position: fixed;
@@ -446,10 +570,10 @@ onMounted(() => {
   background: var(--bg-card);
   border-radius: 20px;
   padding: 32px;
-  width: 480px;
+  width: 520px;
   max-width: 90%;
   box-shadow: var(--shadow-lg);
-  max-height: 80vh;
+  max-height: 85vh;
   overflow-y: auto;
 }
 
@@ -484,28 +608,6 @@ onMounted(() => {
 .form-input:focus,
 .form-select:focus {
   border-color: var(--primary-color);
-}
-
-.device-select {
-  display: grid;
-  grid-template-columns: 1fr 1fr;
-  gap: 8px;
-}
-
-.device-checkbox {
-  display: flex;
-  align-items: center;
-  gap: 8px;
-  padding: 8px 12px;
-  background: var(--bg-secondary);
-  border-radius: 8px;
-  cursor: pointer;
-  font-size: 13px;
-}
-
-.device-checkbox input {
-  width: 16px;
-  height: 16px;
 }
 
 .modal-actions {

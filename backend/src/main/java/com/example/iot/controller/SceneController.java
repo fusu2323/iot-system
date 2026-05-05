@@ -135,9 +135,11 @@ public class SceneController {
         @Parameter(description = "设备 ID", example = "1")
         @RequestParam Long deviceId,
         @Parameter(description = "设备配置", example = "{\"brightness\": 50}")
-        @RequestParam(required = false) String config
+        @RequestParam(required = false) String config,
+        @Parameter(description = "目标状态：0-禁用，1-启用", example = "1")
+        @RequestParam(required = false, defaultValue = "1") Integer targetStatus
     ) {
-        sceneService.addDevice(id, deviceId, config);
+        sceneService.addDevice(id, deviceId, config, targetStatus);
         return Result.success("关联成功", null);
     }
 
