@@ -1,6 +1,6 @@
 package com.example.iot.scheduler;
 
-import com.baomidou.mybatisplus.extension.conditions.query.LambdaQueryWrapper;
+import com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper;
 import com.example.iot.entity.ScheduledTask;
 import com.example.iot.mapper.ScheduledTaskMapper;
 import com.example.iot.service.SceneService;
@@ -10,11 +10,14 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.scheduling.support.CronTrigger;
+import org.springframework.scheduling.support.SimpleTriggerContext;
+import org.springframework.scheduling.TriggerContext;
 import org.springframework.stereotype.Component;
 
+import java.time.Clock;
+import java.time.Instant;
 import java.time.LocalDateTime;
 import java.time.ZoneId;
-import java.time.ZoneOffset;
 import java.util.Date;
 import java.util.LinkedHashMap;
 import java.util.List;
@@ -74,10 +77,12 @@ public class ScheduledTaskExecutor {
     private boolean shouldFireNow(String cronExpression, LocalDateTime now) {
         try {
             CronTrigger trigger = new CronTrigger(cronExpression, ZoneId.of("Asia/Shanghai"));
-            Date nextFire = trigger.nextFireTime(Date.from(now.toInstant(ZoneOffset.UTC)));
+            Instant nowInstant = now.toInstant(ZoneId.of("Asia/Shanghai").getRules().getOffset(now));
+            TriggerContext context = new SimpleTriggerContext(Clock.system(ZoneId.of("Asia/Shanghai")));
+            Instant nextFire = trigger.nextExecution(context);
             if (nextFire == null) return false;
             // Fire if next fire time is within the current minute window
-            long diffSeconds = (nextFire.getTime() - Date.from(now.toInstant(ZoneOffset.UTC)).getTime()) / 1000;
+            long diffSeconds = java.time.Duration.between(nowInstant, nextFire).getSeconds();
             return diffSeconds >= 0 && diffSeconds < 60;
         } catch (Exception e) {
             log.error("Invalid cron expression: {}", cronExpression, e);
@@ -123,9 +128,10 @@ public class ScheduledTaskExecutor {
     private void updateNextFireTime(ScheduledTask task) {
         try {
             CronTrigger trigger = new CronTrigger(task.getCronExpression(), ZoneId.of("Asia/Shanghai"));
-            Date nextFire = trigger.nextFireTime(new Date());
+            TriggerContext context = new SimpleTriggerContext(Clock.system(ZoneId.of("Asia/Shanghai")));
+            Instant nextFire = trigger.nextExecution(context);
             if (nextFire != null) {
-                task.setNextFireTime(nextFire.toInstant().atZone(ZoneId.of("Asia/Shanghai")).toLocalDateTime());
+                task.setNextFireTime(nextFire.atZone(ZoneId.of("Asia/Shanghai")).toLocalDateTime());
                 taskMapper.updateById(task);
             }
         } catch (Exception e) {
