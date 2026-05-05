@@ -12,6 +12,12 @@
         <div class="scene-info">
           <h3 class="scene-name">{{ scene.name }}</h3>
           <p class="scene-desc">{{ scene.description }}</p>
+          <div v-if="scene.mutexGroup" class="mutex-badge">
+            <span class="mutex-tag">{{ scene.mutexGroup }}</span>
+            <span v-if="scene.activeGroupSceneId && scene.activeGroupSceneId !== scene.id" class="mutex-hint">
+              同组有其他启用中
+            </span>
+          </div>
           <div class="scene-devices" v-if="scene.devices && scene.devices.length > 0">
             <span v-for="device in scene.devices" :key="device.deviceId" class="device-tag">
               {{ device.deviceName }}
@@ -61,6 +67,17 @@
               <option value="scene-sleep">睡眠</option>
               <option value="scene-leave">离家</option>
             </select>
+          </div>
+          <div class="form-group">
+            <label class="form-label">互斥组</label>
+            <select v-model="formData.mutexGroup" class="form-select">
+              <option value="">不加入互斥组</option>
+              <option value="居家模式">居家模式</option>
+              <option value="出行模式">出行模式</option>
+              <option value="影音模式">影音模式</option>
+              <option value="睡眠模式">睡眠模式</option>
+            </select>
+            <p class="form-hint">同互斥组内只能有一个场景启用</p>
           </div>
           <div class="form-group">
             <label class="form-label">关联设备</label>
@@ -119,6 +136,7 @@ const formData = ref<any>({
   name: '',
   description: '',
   icon: 'scene-home',
+  mutexGroup: '',
   devices: [],
 });
 
@@ -145,8 +163,9 @@ const loadScenes = async () => {
 const toggleScene = async (scene: any) => {
   try {
     await apiToggleScene(scene.id);
-    scene.isEnabled = scene.isEnabled === 1 ? 0 : 1;
-    showToast('success', `${scene.name}已${scene.isEnabled === 1 ? '启用' : '关闭'}`);
+    await loadScenes();
+    const updated = scenes.value.find(s => s.id === scene.id);
+    showToast('success', `${scene.name}已${updated?.isEnabled === 1 ? '启用' : '关闭'}`);
   } catch (error: any) {
     console.error('切换场景失败:', error);
     showToast('error', error.response?.data?.message || '切换场景失败');
@@ -170,6 +189,7 @@ const editScene = (scene: any) => {
     name: scene.name,
     description: scene.description,
     icon: scene.icon || 'scene-home',
+    mutexGroup: scene.mutexGroup || '',
     devices: scene.devices?.map((d: any) => d.deviceName) || [],
   };
   showAddModal.value = true;
@@ -197,6 +217,7 @@ const handleSubmit = async () => {
       name: formData.value.name,
       description: formData.value.description,
       icon: formData.value.icon,
+      mutexGroup: formData.value.mutexGroup || null,
     };
 
     if (isEditing.value && formData.value.id) {
@@ -310,6 +331,33 @@ onMounted(() => {
   border-radius: 8px;
   font-size: 12px;
   color: var(--text-secondary);
+}
+
+.mutex-badge {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  margin-bottom: 8px;
+}
+
+.mutex-tag {
+  padding: 2px 8px;
+  background: rgba(90, 93, 67, 0.15);
+  color: var(--primary-color);
+  border-radius: 6px;
+  font-size: 11px;
+  font-weight: 500;
+}
+
+.mutex-hint {
+  font-size: 11px;
+  color: var(--text-muted);
+}
+
+.form-hint {
+  margin-top: 4px;
+  font-size: 12px;
+  color: var(--text-muted);
 }
 
 .scene-actions {

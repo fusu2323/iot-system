@@ -24,6 +24,8 @@ export interface SceneInfo {
   icon: string;
   isEnabled: number;
   userId: number;
+  mutexGroup?: string;
+  activeGroupSceneId?: number;
   createTime?: string;
   updateTime?: string;
   devices?: SceneDeviceConfig[];

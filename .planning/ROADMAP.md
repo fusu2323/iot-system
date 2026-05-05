@@ -23,6 +23,7 @@
 | 16 | v1.2 | 1/1 | ✅ Complete | 2026-04-20 |
 | 17 | v1.2 | 1/1 | ✅ Complete | 2026-04-20 |
 | 18 | v1.2 | 1/1 | ✅ Complete | 2026-04-20 |
+| 19 | v1.1→v1.2 | 1/1 | 🔄 Planned | — |
 
 ## v1.2 论文初稿撰写 Phases
 
@@ -114,6 +115,21 @@
 5. 第5章详细设计增加程序流程图的文字解释说明
 6. 第6章测试增加测试方法和测试结果分析的文字描述
 7. 第7章总结增加工作总结和技术心得的详细叙述
+
+---
+
+### Phase 19: 场景互斥前端暴露
+**Goal:** 将 Phase 08 已实现的后端互斥机制暴露到前端 UI
+
+**Requirements:** SCENE-01, SCENE-02, SCENE-04
+
+**Success criteria:**
+1. SceneInfo 接口添加 mutexGroup 和 activeGroupSceneId 字段
+2. 场景创建/编辑表单添加互斥组选择器（5个选项）
+3. 场景卡片展示互斥组徽章和同组启用状态提示
+4. toggleScene() 改为重新加载列表而非乐观更新
+
+**Gap 原因:** Phase 08 的 plan 只覆盖后端，前端从未暴露 mutexGroup 功能
 
 ---
 
