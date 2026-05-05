@@ -2,17 +2,23 @@ package com.example.iot.controller;
 
 import com.baomidou.mybatisplus.core.metadata.IPage;
 import com.example.iot.common.result.Result;
+import com.example.iot.dto.ExecutionLogQueryDTO;
 import com.example.iot.dto.ScheduledTaskCreateDTO;
 import com.example.iot.dto.ScheduledTaskUpdateDTO;
+import com.example.iot.entity.vo.ExecutionLogVO;
 import com.example.iot.entity.vo.ScheduledTaskVO;
+import com.example.iot.service.IExecutionLogService;
 import com.example.iot.service.IScheduledTaskService;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.Parameter;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.validation.Valid;
+import org.springframework.format.annotation.DateTimeFormat;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
+
+import java.time.LocalDateTime;
 
 /**
  * 定时任务管理控制器
@@ -24,9 +30,12 @@ import org.springframework.web.bind.annotation.*;
 public class ScheduledTaskController {
 
     private final IScheduledTaskService scheduledTaskService;
+    private final IExecutionLogService executionLogService;
 
-    public ScheduledTaskController(IScheduledTaskService scheduledTaskService) {
+    public ScheduledTaskController(IScheduledTaskService scheduledTaskService,
+                                  IExecutionLogService executionLogService) {
         this.scheduledTaskService = scheduledTaskService;
+        this.executionLogService = executionLogService;
     }
 
     /**
@@ -111,5 +120,32 @@ public class ScheduledTaskController {
     ) {
         ScheduledTaskVO task = scheduledTaskService.toggle(id);
         return Result.success("操作成功", task);
+    }
+
+    /**
+     * 查询定时任务执行记录
+     */
+    @GetMapping("/{taskId}/executions")
+    @Operation(summary = "查询定时任务执行记录")
+    public Result<IPage<ExecutionLogVO>> getExecutions(
+        @Parameter(description = "任务 ID", example = "1")
+        @PathVariable Long taskId,
+        @Parameter(description = "页码", example = "1")
+        @RequestParam(defaultValue = "1") Integer page,
+        @Parameter(description = "每页大小", example = "20")
+        @RequestParam(defaultValue = "20") Integer size,
+        @Parameter(description = "开始时间")
+        @RequestParam(required = false) @DateTimeFormat(iso = DateTimeFormat.ISO.DATE_TIME) LocalDateTime startTime,
+        @Parameter(description = "结束时间")
+        @RequestParam(required = false) @DateTimeFormat(iso = DateTimeFormat.ISO.DATE_TIME) LocalDateTime endTime
+    ) {
+        ExecutionLogQueryDTO queryDTO = new ExecutionLogQueryDTO();
+        queryDTO.setPage(page);
+        queryDTO.setSize(size);
+        queryDTO.setStartTime(startTime);
+        queryDTO.setEndTime(endTime);
+
+        IPage<ExecutionLogVO> logs = executionLogService.listByTaskId(taskId, queryDTO);
+        return Result.success(logs);
     }
 }
